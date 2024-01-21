@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+
+	<resultMap id="userMap" type="com.example.demo.dto.UserDTO">
+	  <result column="USR_SEQ" property="usrSeq"/>
+	  <result column="USR_ID" property="usrId"/>
+	  <result column="USR_PW" property="usrPw"/>
+	  <result column="USR_NM" property="usrNm"/>
+	  <result column="USR_BDT" property="usrBDT"/>
+	  <result column="GD_CD" property="gdCD"/>
+	  <result column="USR_IN_DT" property="usrINDT"/>
+	  <result column="ST_CD" property="stCD"/>
+	  <result column="RA_CD" property="raCD"/>
+	  <result column="GR_CD" property="grCD"/>
+	  <result column="DV_CD" property="dvCD"/>
+	  <result column="USR_IMG" property="usrImg"/>
+	  <result column="USR_PN" property="usrPn"/>
+	  <result column="USR_EM" property="usrEm"/>
+	  <result column="USR_AD" property="usrAd"/>
+	  <result column="SKILLS" property="skills"/>
+	</resultMap>
+	
+	<select id="getUserList" parameterType="java.util.HashMap" resultMap="userMap">
+	    SELECT *
+	    FROM (
+	    SELECT ROWNUM as RNUM, b.*
+		FROM (
+		SELECT a.USR_SEQ
+		FROM USER_INFO a
+		RIGHT OUTER JOIN (SELECT USR_SEQ
+		, LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+		FROM (
+		SELECT *
+		FROM USER_SKILL_TABLE
+		)
+		GROUP BY USR_SEQ) b
+		ON a.USR_SEQ = b.USR_SEQ
+		WHERE 1=1
+		) a
+			
+		LEFT OUTER JOIN 
+			
+		(
+		SELECT a.*, b.SKILLS
+		FROM USER_INFO a
+		LEFT OUTER JOIN (SELECT USR_SEQ
+		     , LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+		FROM USER_SKILL_TABLE
+		GROUP BY USR_SEQ
+		) b
+		ON a.USR_SEQ = b.USR_SEQ
+		) b
+		ON a.USR_SEQ = b.USR_SEQ
+		ORDER BY a.USR_SEQ
+		)
+		WHERE RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}
+	</select>
+	
+	<select id="getUserTotal" parameterType="java.util.HashMap" resultType="int">
+	    SELECT COUNT(*)
+		FROM (
+	    SELECT *
+		FROM (
+		SELECT a.USR_SEQ
+		FROM USER_INFO a
+		RIGHT OUTER JOIN (SELECT USR_SEQ
+		, LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+		FROM (
+		SELECT *
+		FROM USER_SKILL_TABLE
+		)
+		GROUP BY USR_SEQ) b
+		ON a.USR_SEQ = b.USR_SEQ
+		WHERE 1=1
+		) a
+			
+		LEFT OUTER JOIN 
+			
+		(
+		SELECT a.*, b.SKILLS
+		FROM USER_INFO a
+		LEFT OUTER JOIN (SELECT USR_SEQ
+		     , LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+		FROM USER_SKILL_TABLE
+		GROUP BY USR_SEQ
+		) b
+		ON a.USR_SEQ = b.USR_SEQ
+		) b
+		ON a.USR_SEQ = b.USR_SEQ
+		ORDER BY a.USR_SEQ
+		)
+	</select>
+	
+	<delete id="delUser" parameterType="java.util.List">
+		DELETE FROM
+		    USER_INFO
+		WHERE
+		    USR_SEQ IN
+		<foreach item="item" collection="list" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<insert id="addUser" parameterType="com.example.demo.dto.UserDTO">
+		 INSERT INTO
+		 	USER_INFO (
+		 		USR_SEQ,
+		 		USR_ID,
+		 		USR_PW,
+		 		USR_NM,
+		 		USR_BDT,
+		 		GD_CD,
+		 		USR_IN_DT,
+		 		RA_CD,
+		 		GR_CD,
+		 		DV_CD,
+		 		USR_IMG,
+		 		USR_PN,
+		 		USR_EM,
+		 		USR_AD,
+		 		SALT
+		 		)
+		 VALUES (
+		 	USR_SEQ.NEXTVAL,
+		 	#{usrId},
+		 	#{usrPw},
+		 	#{usrNm},
+		 	#{usrBDT},
+		 	#{gdCD},
+		 	#{usrINDT},
+		 	#{raCD},
+		 	#{grCD},
+		 	#{dvCD},
+		 	#{usrImg},
+		 	#{usrPn},
+		 	#{usrEm},
+		 	#{usrAd},
+		 	#{salt}
+		 )
+		<selectKey resultType="int" keyProperty="usrSeq" order="AFTER">
+	        SELECT USR_SEQ FROM USER_INFO WHERE USR_ID = #{usrId}
+	    </selectKey>
+	</insert>
+	
+	<select id="getUserDetail" parameterType="com.example.demo.dto.UserDTO" resultMap="userMap">
+	   SELECT a.*, b.SKILLS
+		FROM USER_INFO a
+		LEFT OUTER JOIN (SELECT USR_SEQ
+		     , LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+		FROM USER_SKILL_TABLE
+		GROUP BY USR_SEQ) b
+		ON a.USR_SEQ = b.USR_SEQ
+		WHERE a.USR_SEQ = #{usrSeq}
+	</select>
+	
+	<update id="saveUser" parameterType="com.example.demo.dto.UserDTO">
+		 UPDATE
+		 	USER_INFO
+		 SET
+		 	<if test="usrPw != '' and usrPw != null and usrPw != 'undefined'">
+				USR_PW = #{usrPw},
+			</if>
+		 	USR_NM = #{usrNm},
+		 	USR_BDT = #{usrBDT},
+		 	GD_CD = #{gdCD},
+		 	USR_IN_DT = #{usrINDT},
+		 	ST_CD = #{stCD},
+		 	RA_CD = #{raCD},
+		 	GR_CD = #{grCD},
+		 	DV_CD = #{dvCD},
+		 	<if test="usrImg != '' and usrImg != null">
+				USR_IMG = #{usrImg},
+			</if>
+		 	USR_PN = #{usrPn},
+		 	USR_EM = #{usrEm},
+		 	USR_AD = #{usrAd},
+		 	<if test="salt != '' and salt != null">
+				SALT = #{salt}
+			</if>
+		WHERE
+			USR_SEQ = #{usrSeq}
+	</update>
+	
+	<select id="login" parameterType="com.example.demo.dto.UserDTO" resultMap="userMap">
+		SELECT 
+			* 
+		FROM 
+			USER_INFO 
+		WHERE 
+			USR_ID = #{usrId} 
+		AND 
+			USR_PW = #{usrPw}
+	</select>
+	
+	<select id="getUserSalt" parameterType="com.example.demo.dto.UserDTO" resultMap="userMap">
+		SELECT 
+			* 
+		FROM 
+			USER_INFO 
+		WHERE 
+			USR_ID = #{usrId}
+	</select>
+	
+</mapper>
