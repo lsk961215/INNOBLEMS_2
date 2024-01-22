@@ -2,46 +2,46 @@
     <div class="wrap">
 		<div class="pageTitle"><h1>사원 관리</h1></div>
 		<div class="middle">
-			<aside></aside>
+			<asideMenu></asideMenu>
 			<section>
 				<div class="filter"> 
 					<div class="filterTitle"><h1>검색 조건</h1></div>
 					<div class="filterDetail">
 						<div class="filterSection_1">
 							<small>사원번호</small>
-							<input name="usrSeq" id="usrSeq" type="text">
+							<input name="usrSeq" id="usrSeq" type="text" v-model="requestBody.usrSeq">
 							<small>사원명</small>
-							<input name="usrNm" id="usrNm" type="text">
+							<input name="usrNm" id="usrNm" type="text" v-model="requestBody.usrNm">
 							<small>기술등급</small>
-							<select name="grCD" id="grCD">
+							<select name="grCD" id="grCD" v-model="requestBody.grCD">
 								<option value="0">선택</option>
-								<option v-for="item in grCDs" :key="item.id">{{ item.dtCDNM }}</option>
+								<option v-for="item in grCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
 							</select>
 							<small>재직상태</small>
-							<select name="stCD" id="stCD">
+							<select name="stCD" id="stCD" v-model="requestBody.stCD">
 								<option value="0">선택</option>
-								<option v-for="item in stCDs" :key="item.id">{{ item.dtCDNM }}</option>
+								<option v-for="item in stCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
 							</select>
 						</div>
 						<div class="filterSection_2">
-							<small class="inDT">입사일</small> <input id="minDT" type="date" max="9999-12-31" oninput="checkDate(this)"> ~ <input id="maxDT" type="date" max="9999-12-31" oninput="checkDate(this)">
+							<small class="inDT">입사일</small> <input id="minDT" type="date" max="9999-12-31" oninput="checkDate(this)" v-model="requestBody.minDT"> ~ <input id="maxDT" type="date" max="9999-12-31" oninput="checkDate(this)" v-model="requestBody.maxDT">
 						</div>
 						<div class="filterSection_3">
 							<small class="skillText">보유기술</small> 
-              <template v-for="item in skCDs" :key="item.dtCDNM">
-                <input type="checkbox" class="skill" :id="item.dtCD" :value="item.dtCD">
-                <label :for="item.dtCD">{{ item.dtCDNM }} </label>
-              </template>
+							<template v-for="item in skCDs" :key="item.dtCDNM">
+								<input type="checkbox" class="skill" :id="item.dtCD" :value="item.dtCD" v-model="requestBody.skCD">
+								<label :for="item.dtCD">{{ item.dtCDNM }} </label>
+							</template>
 						</div>
 						<div class="filterSection_4">
-							<button id="search">조회</button>
+							<button id="search" v-on:click="getUserList()">조회</button>
 						</div>
 					</div>
 				</div>
 				<div class="result">
 					<div class="resultTitle"><h1>검색 결과</h1></div>
 					<div class="resultPerPage">
-						<select name="countPerPage" id="countPerPage">
+						<select name="countPerPage" id="countPerPage" v-model="requestBody.countPerPage">
 							<option value="5">5개씩 보기</option>
 							<option value="10">10개씩 보기</option>
 						</select>
@@ -63,8 +63,17 @@
 								</tr>
 							</thead>
 							<tbody id="tbody">
-								<tr>
-									<td colspan="10"><h3>조회가 필요합니다.</h3></td>
+								<tr v-for="item in userList" :key="item.usrSeq">
+									<td></td>
+									<td>{{ item.usrSeq }}</td>
+									<td>{{ item.usrINDT }}</td>
+									<td>{{ item.grCD }}</td>
+									<td>{{ item.usrNm }}</td>
+									<td>{{ item.raCD }}</td>
+									<td>{{ item.skills }}</td>
+									<td>{{ item.stCD }}</td>
+									<td>상세수정</td>
+									<td>프로젝트관리</td>
 								</tr>
 							</tbody>
 						</table>
@@ -86,11 +95,32 @@
 
 <script>
 
+import axios from 'axios';
 import asideMenu from '../components/asideMenu.vue'
 
 export default {
 
 	name: 'App',
+
+	data () {
+		return {
+			requestBody : {
+				usrSeq : '',
+				usrNm : '',
+				grCD : 0,
+				stCD : 0,
+				pageNum : 1,
+				skCD : [],
+				minDT : '',
+				maxDT : '',
+				countPerPage : 5
+			},
+			userList : {
+
+			},
+		}
+	},
+
 	components: {
     asideMenu : asideMenu,
 	},
@@ -118,6 +148,142 @@ export default {
 		const arr = this.$codeList.data
 		const raCDs = arr.filter(item => item.mstCD == "RA01")
 		return raCDs
+		}
+	},
+	
+	methods : {
+		getUserList(){
+			var vm = this;
+
+			axios.post('http://localhost:8080/getUserList', this.requestBody)
+			.then(function (response) {
+				console.log(response.data.userList)
+				vm.userList = response.data.userList
+			})
+			.catch(function (error) {
+				console.log(error);
+			});
+			
+		// 	$.ajax({
+		// 		url: "getUserList", 
+		// 		type:"post",
+		// 		data: param,
+		// 		success: function(data) {
+		// 			var str = ""
+		// 			var page = ""
+		// 			var add = "<button id='add' onclick='add()'>�߰�</button>"
+		// 			var del = "<button id='del' onclick='del()'>����</button>"
+					
+					
+		// 			/* model ���� toString() ���� �޾ƿ� ���ڿ��� �迭�� �Ľ� */
+		// 			var codeList = '${codeList}'
+							
+		// 			codeList = codeList.substring(1, codeList.length-1)
+		// 			codeList = codeList.split("CodeDTO")
+		// 			codeList.shift()
+						
+		// 			for(var i = 0; i<codeList.length; i++){
+		// 				var str = codeList[i]
+							
+		// 				if(i < codeList.length-1){
+		// 					codeList[i] = str.substring(1, str.length-3)
+		// 				} else {
+		// 					codeList[i] = str.substring(1, str.length-1)
+		// 				}
+		// 			}
+					
+		// 			$("#tbody").empty()
+		// 			$(".resultPage").empty()
+		// 			$(".resultButton").empty()
+					
+		// 			if(data.userList.length >= 1){
+		// 				$.each(data.userList, function(i){
+		// 					var rank
+		// 					var grade
+		// 					var status
+		// 					var skills = ""
+							
+		// 					var skillArr = data.userList[i].skills.split(",")
+							
+		// 					for(var j = 0; j<codeList.length; j++){
+		// 						if(codeList[j].indexOf("mstCD=RA01") != -1 && codeList[j].indexOf("dtCD=" + data.userList[i].raCD + ",") != -1){
+		// 							rank = codeList[j].substr(codeList[j].indexOf("dtCDNM=")+7)
+		// 						}
+		// 						if(codeList[j].indexOf("mstCD=GR01") != -1 && codeList[j].indexOf("dtCD=" + data.userList[i].grCD + ",") != -1){
+		// 							grade = codeList[j].substr(codeList[j].indexOf("dtCDNM=")+7)
+		// 						}
+		// 						if(codeList[j].indexOf("mstCD=ST01") != -1 && codeList[j].indexOf("dtCD=" + data.userList[i].stCD + ",") != -1){
+		// 							status = codeList[j].substr(codeList[j].indexOf("dtCDNM=")+7)
+		// 						}
+								
+		// 						for(var k = 0; k<skillArr.length; k++){
+		// 							if(codeList[j].indexOf("mstCD=SK01") != -1 && codeList[j].indexOf("dtCD=" + skillArr[k] + ",") != -1){
+		// 								if(k != 0){
+		// 									skills += ", "
+		// 								}
+		// 								skills += codeList[j].substr(codeList[j].indexOf("dtCDNM=")+7)
+		// 							}
+		// 						}
+		// 					}
+							
+		// 					str += "<tr>"
+		// 					str += "<td class='checkRow'><input type='checkbox' class='usrSeq' value=" + data.userList[i].usrSeq + " onclick='checkOne()'></td>"
+		// 					str += "<td class='numberRow'><button id='numberButton' onclick='edit(this)' name='" + data.userList[i].usrSeq + "'>" + data.userList[i].usrSeq + "</button></td>"
+		// 					str += "<td class='inDateRow'>" + data.userList[i].usrINDT + "</td>"
+		// 					if(rank == undefined){
+		// 						str += "<td class='rankRow'>-</td>"
+		// 					} else {
+		// 						str += "<td class='rankRow'>" + rank + "</td>"
+		// 					}
+		// 					str += "<td class='nameRow'>" + data.userList[i].usrNm + "</td>"
+		// 					if(grade == undefined){
+		// 						str += "<td class='gradeRow'>-</td>"
+		// 					} else {
+		// 						str += "<td class='gradeRow'>" + grade + "</td>"
+		// 					}
+		// 					str += "<td class='skillsRow'>" + skills + "</td>"
+		// 					if(status == undefined){
+		// 						str += "<td class='statusRow'>-</td>"
+		// 					} else {
+		// 						str += "<td class='statusRow'>" + status + "</td>"
+		// 					}
+		// 					str += "<td class='editRow'><button id='edit' onclick='edit(this)' name='" + data.userList[i].usrSeq + "'>��/����</button></td>"
+		// 					str += "<td class='projectRow'><a id='project' href='getUserProject?usrSeq=" + data.userList[i].usrSeq + "'>������Ʈ ����</a></td>"
+		// 					str += "</tr>"
+		// 				})
+						
+		// 				if(data.beginPaging != 1){
+		// 					page += "<a href=getUserList?pageNum=" + (data.beginPaging - 1) + ">����</a>"
+		// 				}
+						
+		// 				for(var i = data.beginPaging; i <= data.endPaging; i++){
+		// 					if(i == data.pageNum){
+		// 						page += "<button style='font-size:2em' id='currentPage' class='page' value=" + i +">" + i + "</button>"
+		// 					} else {
+		// 						page += "<button class='page' value=" + i +" onclick='getUserList(" + i + ")'>" + i + "</button>"
+		// 					}
+		// 				}
+						
+		// 				if(data.endPaging != data.totalPaging){
+		// 					page += "<a href=getUserList?pageNum=" + (data.endPaging + 1) + ">����</a>"
+		// 				}
+						
+		// 			} else {
+		// 				str += "<tr>"
+		// 				str += '<td colspan="10"><h3>�˻������ �����ϴ�.</h3></td>'
+		// 				str += "</tr>"
+		// 			}
+					
+		// 			$("#checkAll").prop('checked',false)
+		// 			$("#tbody").append(str)
+		// 			$(".resultPage").append(page)
+		// 			$(".resultButton").append(add)
+		// 			$(".resultButton").append(del)
+		// 		},
+		// 		error: function() {
+		// 			alert("��Ž���")
+		// 		}
+		// 	})
 		}
 	}
 };
