@@ -23,7 +23,7 @@
 	  <result column="SKILLS" property="skills"/>
 	</resultMap>
 	
-	<select id="getUserList" parameterType="java.util.HashMap" resultMap="userMap">
+	<select id="getUserList" parameterType="com.example.demo.dto.UserDTO" resultMap="userMap">
 	    SELECT *
 	    FROM (
 	    SELECT ROWNUM as RNUM, b.*
@@ -59,7 +59,7 @@
 		WHERE RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}
 	</select>
 	
-	<select id="getUserTotal" parameterType="java.util.HashMap" resultType="int">
+	<select id="getUserTotal" parameterType="com.example.demo.dto.UserDTO" resultType="int">
 	    SELECT COUNT(*)
 		FROM (
 	    SELECT *

@@ -26,7 +26,13 @@ public class UserDTO {
 	private String minDT;
 	private String maxDT;
 	private String skills;
-	private String currentPage;
 	private String message;
 	private String salt;
+	private int countPerPage = 5;
+	private int pageNum = 1;
+	private int startNum;
+	private int endNum;
+	private int beginPaging;
+	private int endPaging;
+	private int totalPaging;
 }

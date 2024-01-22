@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.dao.UserDAO;
+import com.example.demo.dto.UserDTO;
 
 @Service
 public class UserService {
@@ -16,11 +17,11 @@ public class UserService {
 	UserDAO userDAO;
 	
 	
-	public Map getUserList(Map selectMap) {
+	public Map getUserList(UserDTO userDTO, List skils) {
 		Map resultMap = new HashMap();
 		
-		int pageNum = (Integer) selectMap.get("pageNum");
-		int countPerPage = (Integer) selectMap.get("countPerPage");
+		int pageNum = userDTO.getPageNum();
+		int countPerPage = userDTO.getCountPerPage();
 		
 		int startNum = 0;
 		int endNum = 0;
@@ -28,12 +29,12 @@ public class UserService {
 		startNum = (pageNum-1)*countPerPage+1;
 		endNum = pageNum*countPerPage;
 		
-		selectMap.put("startNum", startNum);
-		selectMap.put("endNum", endNum);
+		userDTO.setStartNum(startNum);
+		userDTO.setEndNum(endNum);
 		
-		List userList = userDAO.getUserList(selectMap);
+		List userList = userDAO.getUserList(userDTO);
 		
-		int total = userDAO.getUserTotal(selectMap);
+		int total = userDAO.getUserTotal(userDTO);
 		
 		int groupCount = 5;
 		

@@ -153,6 +153,8 @@ export default {
 	
 	methods : {
 		getUserList(){
+			console.log(this.requestBody)
+
 			var vm = this;
 
 			axios.post('http://localhost:8080/getUserList', this.requestBody)

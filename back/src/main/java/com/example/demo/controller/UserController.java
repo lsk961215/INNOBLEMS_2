@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -22,12 +23,7 @@ public class UserController {
 	
 	
 	@RequestMapping("/getUserList")
-	public Map getUserList(HttpServletRequest request, UserDTO userDTO) throws Exception {
-		Map selectMap = new HashMap();
-		
-		int pageNum = 1;
-		int countPerPage = 5;
-		
+	public Map getUserList(HttpServletRequest request, @RequestBody UserDTO userDTO) throws Exception {
 		List skills = new ArrayList();
 		
 		if(userDTO.getSkills() != null) {
@@ -39,42 +35,15 @@ public class UserController {
 			}
 		}
 		
-		String tmp_pageNum = request.getParameter("pageNum");
-		
-		if(tmp_pageNum != null) {
-			try { 
-				pageNum = Integer.parseInt(tmp_pageNum);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		}
-		
-		String tmp_countPerPage = request.getParameter("countPerPage");
-		
-		if(tmp_countPerPage != null) {
-			try { 
-				countPerPage = Integer.parseInt(tmp_countPerPage);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-		}
-		
-		selectMap.put("skills", skills);
-		selectMap.put("userDTO", userDTO);
-		selectMap.put("pageNum", pageNum);
-		selectMap.put("countPerPage", countPerPage);
-		
-		Map userMap = new HashMap();
+		Map resultMap = new HashMap();
 		
 		try {
-			userMap = userService.getUserList(selectMap);
+			resultMap = userService.getUserList(userDTO, skills);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("오류가 발생했습니다.");
 		}
 		
-		return userMap;
+		return resultMap;
 	}
 }
