@@ -14,22 +14,20 @@
 							<input name="usrNm" id="usrNm" type="text" v-model="requestBody.usrNm">
 							<small>기술등급</small>
 							<select name="grCD" id="grCD" v-model="requestBody.grCD">
-								<option value="0">선택</option>
 								<option v-for="item in grCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
 							</select>
 							<small>재직상태</small>
 							<select name="stCD" id="stCD" v-model="requestBody.stCD">
-								<option value="0">선택</option>
 								<option v-for="item in stCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
 							</select>
 						</div>
 						<div class="filterSection_2">
-							<small class="inDT">입사일</small> <input id="minDT" type="date" max="9999-12-31" oninput="checkDate(this)" v-model="requestBody.minDT"> ~ <input id="maxDT" type="date" max="9999-12-31" oninput="checkDate(this)" v-model="requestBody.maxDT">
+							<small class="inDT">입사일</small> <input id="minDT" type="date" max="9999-12-31" v-model="requestBody.minDT"> ~ <input id="maxDT" type="date" max="9999-12-31" v-model="requestBody.maxDT">
 						</div>
 						<div class="filterSection_3">
 							<small class="skillText">보유기술</small> 
 							<template v-for="item in skCDs" :key="item.dtCDNM">
-								<input type="checkbox" class="skill" :id="item.dtCD" :value="item.dtCD" v-model="requestBody.skCD">
+								<input type="checkbox" class="skill" :id="item.dtCD" :value="item.dtCD" v-model="requestBody.skillList">
 								<label :for="item.dtCD">{{ item.dtCDNM }} </label>
 							</template>
 						</div>
@@ -59,27 +57,37 @@
 									<th class="skillsHead">보유기술</th>
 									<th class="statusHead">재직상태</th>
 									<th class="editHead">상세/수정</th>
-									<th class="projectHead">프로젝트관리</th>
+									<th class="projectHead">프로젝트 관리</th>
 								</tr>
 							</thead>
-							<tbody id="tbody">
+							<tbody id="tbody" v-if="userList.length == 0">
+								<tr>
+									<td colspan="10"><h2>검색결과가 없습니다.</h2></td>
+								</tr>
+							</tbody>
+							<tbody id="tbody" v-else-if="userList.length == null">
+								<tr>
+									<td colspan="10"><h2>데이터가 없습니다.</h2></td>
+								</tr>
+							</tbody>
+							<tbody id="tbody" v-else>
 								<tr v-for="item in userList" :key="item.usrSeq">
-									<td></td>
+									<td><input type="checkbox"></td>
 									<td>{{ item.usrSeq }}</td>
 									<td>{{ item.usrINDT }}</td>
-									<td>{{ item.grCD }}</td>
-									<td>{{ item.usrNm }}</td>
 									<td>{{ item.raCD }}</td>
+									<td>{{ item.usrNm }}</td>
+									<td>{{ item.grCD }}</td>
 									<td>{{ item.skills }}</td>
 									<td>{{ item.stCD }}</td>
-									<td>상세수정</td>
-									<td>프로젝트관리</td>
+									<td><input type="button" value="상세/수정"></td>
+									<td><input type="button" value="프로젝트 관리"></td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
 					<div class="resultPage">
-						
+						<button  v-for="(item, index) in page.totalPaging" :key="index" :class="{'currentPage': page.beginPaging + index == page.pageNum }" v-on:click="getUserList(page.beginPaging + index)"> {{ page.beginPaging + index }}</button>
 					</div>
 					<div class="resultButtonWrap">
 						<div class="resultButton">
@@ -109,8 +117,9 @@ export default {
 				usrNm : '',
 				grCD : 0,
 				stCD : 0,
-				pageNum : 1,
-				skCD : [],
+				pageNum : '',
+				skillList : [],
+				skills : '',
 				minDT : '',
 				maxDT : '',
 				countPerPage : 5
@@ -118,6 +127,12 @@ export default {
 			userList : {
 
 			},
+			page : {
+				beginPaging : '',
+				totalPaging : '',
+				endPaging : '',
+				pageNum : ''
+			}
 		}
 	},
 
@@ -152,15 +167,22 @@ export default {
 	},
 	
 	methods : {
-		getUserList(){
-			console.log(this.requestBody)
-
+		getUserList(pageNum){
+			this.requestBody.skillList.sort()
+			this.requestBody.skills = this.requestBody.skillList.toString()
+			this.requestBody.pageNum = pageNum
+			
 			var vm = this;
 
 			axios.post('http://localhost:8080/getUserList', this.requestBody)
 			.then(function (response) {
 				console.log(response.data.userList)
-				vm.userList = response.data.userList
+				vm.userList = vm.parseUserList(response.data.userList)
+
+				vm.page.beginPaging = response.data.beginPaging
+				vm.page.endPaging = response.data.endPaging
+				vm.page.pageNum = response.data.pageNum
+				vm.page.totalPaging = response.data.totalPaging
 			})
 			.catch(function (error) {
 				console.log(error);
@@ -286,9 +308,42 @@ export default {
 		// 			alert("��Ž���")
 		// 		}
 		// 	})
+
+
+		},
+
+		parseUserList(userList) {
+			var codeList = this.$codeList.data
+
+			for(var i = 0; i<userList.length; i++){
+				var skillArr = userList[i].skills.split(",")
+				userList[i].skills = ""
+
+				for(var j = 0; j<codeList.length; j++){
+					if(codeList[j].mstCD == "RA01" && userList[i].raCD == codeList[j].dtCD){
+						userList[i].raCD = codeList[j].dtCDNM
+					}
+					if(codeList[j].mstCD == "GR01" && userList[i].grCD == codeList[j].dtCD){
+						userList[i].grCD = codeList[j].dtCDNM
+					}
+					if(codeList[j].mstCD == "ST01" && userList[i].stCD == codeList[j].dtCD){
+						userList[i].stCD = codeList[j].dtCDNM
+					}
+					for(var k = 0; k<skillArr.length; k++){
+						if(codeList[j].mstCD == "SK01" && skillArr[k] == codeList[j].dtCD){
+							if(k != 0){
+								userList[i].skills += ", "
+							}
+							userList[i].skills += codeList[j].dtCDNM
+						}
+					}
+				}
+			}
+
+			return userList
 		}
 	}
-};
+}
 </script>
   
 <style>
@@ -636,6 +691,10 @@ table .projectHead {
 	display: flex;
 	flex-direction: row-reverse;
 	margin-bottom: 10px;
+}
+
+.currentPage {
+	font-size: 2em;
 }
 
 </style>

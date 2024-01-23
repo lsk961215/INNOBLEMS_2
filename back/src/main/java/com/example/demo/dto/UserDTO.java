@@ -1,5 +1,7 @@
 package com.example.demo.dto;
 
+import java.util.List;
+
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -35,4 +37,5 @@ public class UserDTO {
 	private int beginPaging;
 	private int endPaging;
 	private int totalPaging;
+	private List skillList;
 }

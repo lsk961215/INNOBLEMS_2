@@ -17,7 +17,7 @@ public class UserService {
 	UserDAO userDAO;
 	
 	
-	public Map getUserList(UserDTO userDTO, List skils) {
+	public Map getUserList(UserDTO userDTO) {
 		Map resultMap = new HashMap();
 		
 		int pageNum = userDTO.getPageNum();

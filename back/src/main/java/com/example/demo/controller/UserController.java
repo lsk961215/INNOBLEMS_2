@@ -24,21 +24,10 @@ public class UserController {
 	
 	@RequestMapping("/getUserList")
 	public Map getUserList(HttpServletRequest request, @RequestBody UserDTO userDTO) throws Exception {
-		List skills = new ArrayList();
-		
-		if(userDTO.getSkills() != null) {
-			String str = userDTO.getSkills();
-			String[] skillArray = str.split(",");
-			
-			for (int i = 0; i<skillArray.length; i++) {
-				skills.add(skillArray[i]);
-			}
-		}
-		
 		Map resultMap = new HashMap();
 		
 		try {
-			resultMap = userService.getUserList(userDTO, skills);
+			resultMap = userService.getUserList(userDTO);
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("오류가 발생했습니다.");

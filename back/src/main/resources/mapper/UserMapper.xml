@@ -35,10 +35,37 @@
 		FROM (
 		SELECT *
 		FROM USER_SKILL_TABLE
+		<if test="skillList.size != 0">
+			WHERE SK_CD IN <foreach item="item" collection="skillList" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
 		)
 		GROUP BY USR_SEQ) b
 		ON a.USR_SEQ = b.USR_SEQ
 		WHERE 1=1
+		<if test="skillList.size != 0">
+			AND SKILLS = #{skills}
+		</if>
+		<if test="usrSeq != 0">
+			AND a.USR_SEQ = #{usrSeq}
+		</if>
+		<if test="usrNm != ''">
+			AND a.USR_NM like '%' || #{usrNm} || '%'
+		</if>
+		<if test="grCD != 0">
+			AND a.GR_CD = #{grCD}
+		</if>
+		<if test="stCD != 0">
+			AND a.ST_CD = #{stCD}
+		</if>
+		<if test="minDT != '' and maxDT != ''">
+			AND a.USR_IN_DT BETWEEN #{minDT} AND #{maxDT}
+		</if>
+		<if test="minDT == '' and maxDT != ''">
+			AND a.USR_IN_DT <![CDATA[ <= ]]> #{maxDT}
+		</if>
+		<if test="minDT != '' and maxDT == ''">
+			AND a.USR_IN_DT <![CDATA[ >= ]]> #{minDT}
+		</if>
 		) a
 			
 		LEFT OUTER JOIN 
@@ -71,10 +98,37 @@
 		FROM (
 		SELECT *
 		FROM USER_SKILL_TABLE
+		<if test="skillList.size != 0">
+			WHERE SK_CD IN <foreach item="item" collection="skillList" open="(" separator="," close=")"> #{item} </foreach>
+		</if>
 		)
 		GROUP BY USR_SEQ) b
 		ON a.USR_SEQ = b.USR_SEQ
 		WHERE 1=1
+		<if test="skillList.size != 0">
+			AND SKILLS = #{skills}
+		</if>
+		<if test="usrSeq != 0">
+			AND a.USR_SEQ = #{usrSeq}
+		</if>
+		<if test="usrNm != ''">
+			AND a.USR_NM like '%' || #{usrNm} || '%'
+		</if>
+		<if test="grCD != 0">
+			AND a.GR_CD = #{grCD}
+		</if>
+		<if test="stCD != 0">
+			AND a.ST_CD = #{stCD}
+		</if>
+		<if test="minDT != '' and maxDT != ''">
+			AND a.USR_IN_DT BETWEEN #{minDT} AND #{maxDT}
+		</if>
+		<if test="minDT == '' and maxDT != ''">
+			AND a.USR_IN_DT <![CDATA[ <= ]]> #{maxDT}
+		</if>
+		<if test="minDT != '' and maxDT == ''">
+			AND a.USR_IN_DT <![CDATA[ >= ]]> #{minDT}
+		</if>
 		) a
 			
 		LEFT OUTER JOIN 
