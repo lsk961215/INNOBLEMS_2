@@ -29,7 +29,7 @@ public class UserDAO {
 	}
 	
 	public void addUserSkill(UserDTO userDTO) {
-		sqlSession.insert("user.addUserSkill", userDTO);
+		sqlSession.insert("skill.addUserSkill", userDTO);
 		return;
 	}
 }

@@ -224,9 +224,9 @@ export default {
         add: function() {
             axios.post('http://localhost:8080/addUser', this.requestBody)
 			.then(function (response) {
-                if(response == 0){
+                if(response.data == 0){
                     alert("등록되었습니다.")
-                } else if(response == 1){
+                } else if(response.data == 1){
                     alert("등록할 수 없습니다.")
                 }
 			})
