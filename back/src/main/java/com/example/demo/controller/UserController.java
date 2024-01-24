@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.demo.aop.SHA256;
 import com.example.demo.dto.UserDTO;
 import com.example.demo.service.UserService;
 
@@ -34,5 +35,35 @@ public class UserController {
 		}
 		
 		return resultMap;
+	}
+	
+	@RequestMapping("/addUser")
+	public String addUser(HttpServletRequest request, @RequestBody UserDTO userDTO) throws Exception {
+		Map resultMap = new HashMap();
+		
+		try {
+			String join_pw = userDTO.getUsrPw();
+			
+			new SHA256();
+			
+			String salt = SHA256.createSalt(join_pw);
+			
+			String pw = SHA256.encrypt(join_pw, salt);
+			
+			userDTO.setUsrPw(pw);
+			userDTO.setSalt(salt);
+			
+			int usrSeq = userService.addUser(userDTO);
+			userDTO.setUsrSeq(usrSeq);
+			
+			userService.addUserSkill(userDTO);
+			
+			return "0";
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("오류가 발생했습니다.");
+			
+			return "1";
+		}
 	}
 }

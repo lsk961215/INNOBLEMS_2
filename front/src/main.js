@@ -3,6 +3,7 @@ import { createPinia } from 'pinia'
 import App from './App.vue'
 import router from './router/index.js'
 import axios from 'axios';
+import { VueDaumPostcode } from 'vue-daum-postcode';
 
 const app = createApp(App)
 app.config.globalProperties.$axios = axios
@@ -14,5 +15,6 @@ app.config.globalProperties.$grCDs = function () {
 }
 app.use(router)
 app.use(createPinia())
+app.use(VueDaumPostcode)
 app.mount('#app')
  

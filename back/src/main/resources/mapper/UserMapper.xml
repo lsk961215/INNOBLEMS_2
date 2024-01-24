@@ -19,8 +19,10 @@
 	  <result column="USR_IMG" property="usrImg"/>
 	  <result column="USR_PN" property="usrPn"/>
 	  <result column="USR_EM" property="usrEm"/>
-	  <result column="USR_AD" property="usrAd"/>
 	  <result column="SKILLS" property="skills"/>
+	  <result column="USR_ZIP" property="usrZIP"/>
+	  <result column="USR_RAD" property="usrRAD"/>
+	  <result column="USR_DAD" property="usrDAD"/>
 	</resultMap>
 	
 	<select id="getUserList" parameterType="com.example.demo.dto.UserDTO" resultMap="userMap">
@@ -168,14 +170,16 @@
 		 		USR_BDT,
 		 		GD_CD,
 		 		USR_IN_DT,
+		 		ST_CD,
 		 		RA_CD,
 		 		GR_CD,
 		 		DV_CD,
-		 		USR_IMG,
 		 		USR_PN,
 		 		USR_EM,
-		 		USR_AD,
-		 		SALT
+		 		SALT,
+		 		USR_ZIP,
+		 		USR_RAD,
+		 		USR_DAD
 		 		)
 		 VALUES (
 		 	USR_SEQ.NEXTVAL,
@@ -183,16 +187,18 @@
 		 	#{usrPw},
 		 	#{usrNm},
 		 	#{usrBDT},
-		 	#{gdCD},
+			#{gdCD},
 		 	#{usrINDT},
-		 	#{raCD},
-		 	#{grCD},
-		 	#{dvCD},
-		 	#{usrImg},
+		 	#{stCD},
+			#{raCD},
+			#{grCD},
+			#{dvCD},
 		 	#{usrPn},
 		 	#{usrEm},
-		 	#{usrAd},
-		 	#{salt}
+		 	#{salt},
+			#{usrZIP},
+			#{usrRAD},
+			#{usrDAD}
 		 )
 		<selectKey resultType="int" keyProperty="usrSeq" order="AFTER">
 	        SELECT USR_SEQ FROM USER_INFO WHERE USR_ID = #{usrId}

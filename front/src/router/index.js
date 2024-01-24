@@ -3,6 +3,7 @@ import mainPage from '../views/mainPage.vue'
 import testPage from '../views/testPage.vue'
 import userList from '../views/userList.vue'
 import codeList from '../views/codeList.vue'
+import addUser from '../views/addUser.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -11,6 +12,7 @@ const router = createRouter({
         { path: '/test', component: testPage},
         { path: '/userList', component: userList},
         { path: '/codeList', component: codeList},
+        { path: '/goAddUser', component: addUser},
     ],
 })
 

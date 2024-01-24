@@ -14,10 +14,12 @@
 							<input name="usrNm" id="usrNm" type="text" v-model="requestBody.usrNm">
 							<small>기술등급</small>
 							<select name="grCD" id="grCD" v-model="requestBody.grCD">
+								<option value="0">선택</option>
 								<option v-for="item in grCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
 							</select>
 							<small>재직상태</small>
 							<select name="stCD" id="stCD" v-model="requestBody.stCD">
+								<option value="0">선택</option>
 								<option v-for="item in stCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
 							</select>
 						</div>
@@ -91,13 +93,13 @@
 					</div>
 					<div class="resultButtonWrap">
 						<div class="resultButton">
-					
+							<button v-if="userList.length > 0" v-on:click="add()" >등록</button>
+							<button v-if="userList.length > 0" >삭제</button>
 						</div>
 					</div>
 				</div>
 			</section>
 		</div>
-		
 	</div>
 </template>
 
@@ -112,32 +114,32 @@ export default {
 
 	data () {
 		return {
-			requestBody : {
-				usrSeq : '',
-				usrNm : '',
-				grCD : 0,
-				stCD : 0,
-				pageNum : '',
-				skillList : [],
-				skills : '',
-				minDT : '',
-				maxDT : '',
-				countPerPage : 5
+			requestBody: {
+				usrSeq: '',
+				usrNm: '',
+				grCD: 0,
+				stCD: 0,
+				pageNum: '',
+				skillList: [],
+				skills: '',
+				minDT: '',
+				maxDT: '',
+				countPerPage: 5
 			},
-			userList : {
+			userList: {
 
 			},
-			page : {
-				beginPaging : '',
-				totalPaging : '',
-				endPaging : '',
-				pageNum : ''
-			}
+			page: {
+				beginPaging: '',
+				totalPaging: '',
+				endPaging: '',
+				pageNum: ''
+			},
 		}
 	},
 
 	components: {
-    asideMenu : asideMenu,
+    asideMenu: asideMenu,
 	},
 
 	computed: {
@@ -167,12 +169,12 @@ export default {
 	},
 	
 	methods : {
-		getUserList(pageNum){
+		getUserList: function(pageNum){
 			this.requestBody.skillList.sort()
 			this.requestBody.skills = this.requestBody.skillList.toString()
 			this.requestBody.pageNum = pageNum
 			
-			var vm = this;
+			var vm = this
 
 			axios.post('http://localhost:8080/getUserList', this.requestBody)
 			.then(function (response) {
@@ -185,134 +187,11 @@ export default {
 				vm.page.totalPaging = response.data.totalPaging
 			})
 			.catch(function (error) {
-				console.log(error);
-			});
-			
-		// 	$.ajax({
-		// 		url: "getUserList", 
-		// 		type:"post",
-		// 		data: param,
-		// 		success: function(data) {
-		// 			var str = ""
-		// 			var page = ""
-		// 			var add = "<button id='add' onclick='add()'>�߰�</button>"
-		// 			var del = "<button id='del' onclick='del()'>����</button>"
-					
-					
-		// 			/* model ���� toString() ���� �޾ƿ� ���ڿ��� �迭�� �Ľ� */
-		// 			var codeList = '${codeList}'
-							
-		// 			codeList = codeList.substring(1, codeList.length-1)
-		// 			codeList = codeList.split("CodeDTO")
-		// 			codeList.shift()
-						
-		// 			for(var i = 0; i<codeList.length; i++){
-		// 				var str = codeList[i]
-							
-		// 				if(i < codeList.length-1){
-		// 					codeList[i] = str.substring(1, str.length-3)
-		// 				} else {
-		// 					codeList[i] = str.substring(1, str.length-1)
-		// 				}
-		// 			}
-					
-		// 			$("#tbody").empty()
-		// 			$(".resultPage").empty()
-		// 			$(".resultButton").empty()
-					
-		// 			if(data.userList.length >= 1){
-		// 				$.each(data.userList, function(i){
-		// 					var rank
-		// 					var grade
-		// 					var status
-		// 					var skills = ""
-							
-		// 					var skillArr = data.userList[i].skills.split(",")
-							
-		// 					for(var j = 0; j<codeList.length; j++){
-		// 						if(codeList[j].indexOf("mstCD=RA01") != -1 && codeList[j].indexOf("dtCD=" + data.userList[i].raCD + ",") != -1){
-		// 							rank = codeList[j].substr(codeList[j].indexOf("dtCDNM=")+7)
-		// 						}
-		// 						if(codeList[j].indexOf("mstCD=GR01") != -1 && codeList[j].indexOf("dtCD=" + data.userList[i].grCD + ",") != -1){
-		// 							grade = codeList[j].substr(codeList[j].indexOf("dtCDNM=")+7)
-		// 						}
-		// 						if(codeList[j].indexOf("mstCD=ST01") != -1 && codeList[j].indexOf("dtCD=" + data.userList[i].stCD + ",") != -1){
-		// 							status = codeList[j].substr(codeList[j].indexOf("dtCDNM=")+7)
-		// 						}
-								
-		// 						for(var k = 0; k<skillArr.length; k++){
-		// 							if(codeList[j].indexOf("mstCD=SK01") != -1 && codeList[j].indexOf("dtCD=" + skillArr[k] + ",") != -1){
-		// 								if(k != 0){
-		// 									skills += ", "
-		// 								}
-		// 								skills += codeList[j].substr(codeList[j].indexOf("dtCDNM=")+7)
-		// 							}
-		// 						}
-		// 					}
-							
-		// 					str += "<tr>"
-		// 					str += "<td class='checkRow'><input type='checkbox' class='usrSeq' value=" + data.userList[i].usrSeq + " onclick='checkOne()'></td>"
-		// 					str += "<td class='numberRow'><button id='numberButton' onclick='edit(this)' name='" + data.userList[i].usrSeq + "'>" + data.userList[i].usrSeq + "</button></td>"
-		// 					str += "<td class='inDateRow'>" + data.userList[i].usrINDT + "</td>"
-		// 					if(rank == undefined){
-		// 						str += "<td class='rankRow'>-</td>"
-		// 					} else {
-		// 						str += "<td class='rankRow'>" + rank + "</td>"
-		// 					}
-		// 					str += "<td class='nameRow'>" + data.userList[i].usrNm + "</td>"
-		// 					if(grade == undefined){
-		// 						str += "<td class='gradeRow'>-</td>"
-		// 					} else {
-		// 						str += "<td class='gradeRow'>" + grade + "</td>"
-		// 					}
-		// 					str += "<td class='skillsRow'>" + skills + "</td>"
-		// 					if(status == undefined){
-		// 						str += "<td class='statusRow'>-</td>"
-		// 					} else {
-		// 						str += "<td class='statusRow'>" + status + "</td>"
-		// 					}
-		// 					str += "<td class='editRow'><button id='edit' onclick='edit(this)' name='" + data.userList[i].usrSeq + "'>��/����</button></td>"
-		// 					str += "<td class='projectRow'><a id='project' href='getUserProject?usrSeq=" + data.userList[i].usrSeq + "'>������Ʈ ����</a></td>"
-		// 					str += "</tr>"
-		// 				})
-						
-		// 				if(data.beginPaging != 1){
-		// 					page += "<a href=getUserList?pageNum=" + (data.beginPaging - 1) + ">����</a>"
-		// 				}
-						
-		// 				for(var i = data.beginPaging; i <= data.endPaging; i++){
-		// 					if(i == data.pageNum){
-		// 						page += "<button style='font-size:2em' id='currentPage' class='page' value=" + i +">" + i + "</button>"
-		// 					} else {
-		// 						page += "<button class='page' value=" + i +" onclick='getUserList(" + i + ")'>" + i + "</button>"
-		// 					}
-		// 				}
-						
-		// 				if(data.endPaging != data.totalPaging){
-		// 					page += "<a href=getUserList?pageNum=" + (data.endPaging + 1) + ">����</a>"
-		// 				}
-						
-		// 			} else {
-		// 				str += "<tr>"
-		// 				str += '<td colspan="10"><h3>�˻������ �����ϴ�.</h3></td>'
-		// 				str += "</tr>"
-		// 			}
-					
-		// 			$("#checkAll").prop('checked',false)
-		// 			$("#tbody").append(str)
-		// 			$(".resultPage").append(page)
-		// 			$(".resultButton").append(add)
-		// 			$(".resultButton").append(del)
-		// 		},
-		// 		error: function() {
-		// 			alert("��Ž���")
-		// 		}
-		// 	})
-
-
+				console.log(error)
+			})
 		},
 
-		parseUserList(userList) {
+		parseUserList: function(userList) {
 			var codeList = this.$codeList.data
 
 			for(var i = 0; i<userList.length; i++){
@@ -341,6 +220,10 @@ export default {
 			}
 
 			return userList
+		},
+
+		add: function(){
+			window.open("goAddUser", "openForm", "width=1000px height=600px");
 		}
 	}
 }

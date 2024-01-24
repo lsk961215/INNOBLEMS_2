@@ -24,7 +24,6 @@ public class UserDTO {
 	private String usrImg;
 	private String usrPn;
 	private String usrEm;
-	private String usrAd;
 	private String minDT;
 	private String maxDT;
 	private String skills;
@@ -38,4 +37,7 @@ public class UserDTO {
 	private int endPaging;
 	private int totalPaging;
 	private List skillList;
+	private String usrZIP;
+	private String usrRAD;
+	private String usrDAD;
 }

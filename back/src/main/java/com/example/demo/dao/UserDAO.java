@@ -22,4 +22,14 @@ public class UserDAO {
 	public int getUserTotal(UserDTO userDTO) {
 		return sqlSession.selectOne("user.getUserTotal", userDTO);
 	}
+	
+	public int addUser(UserDTO userDTO) {
+		sqlSession.insert("user.addUser", userDTO);
+		return userDTO.getUsrSeq();
+	}
+	
+	public void addUserSkill(UserDTO userDTO) {
+		sqlSession.insert("user.addUserSkill", userDTO);
+		return;
+	}
 }

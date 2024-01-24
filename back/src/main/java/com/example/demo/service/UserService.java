@@ -16,7 +16,6 @@ public class UserService {
 	@Autowired
 	UserDAO userDAO;
 	
-	
 	public Map getUserList(UserDTO userDTO) {
 		Map resultMap = new HashMap();
 		
@@ -56,5 +55,17 @@ public class UserService {
 		resultMap.put("pageNum", pageNum);
 		
 		return resultMap;
+	}
+	
+	public int addUser(UserDTO userDTO) {
+		return userDAO.addUser(userDTO);
+	}
+	
+	public void addUserSkill(UserDTO userDTO) {
+		for(int i = 0; i<userDTO.getSkillList().size(); i++) {
+			userDTO.setSkills((String) userDTO.getSkillList().get(i));
+			userDAO.addUserSkill(userDTO);
+		}
+		return;
 	}
 }

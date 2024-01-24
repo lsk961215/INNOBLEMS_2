@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="skill">
+	
+	<insert id="addUserSkill" parameterType="com.example.demo.dto.UserDTO">
+			INSERT INTO 
+				USER_SKILL_TABLE (
+					USR_SEQ, 
+					SK_CD
+					)
+			VALUES	(
+				#{usrSeq}, 
+				#{skills}
+				)
+	</insert>
+	
+	<delete id="delUserSkill" parameterType="com.example.demo.dto.UserDTO">
+		DELETE FROM
+			USER_SKILL_TABLE
+		WHERE
+			USR_SEQ = #{usrSeq}
+	</delete>
+	
+	<delete id="delProjectSkill" parameterType="com.example.demo.dto.UserDTO">
+		DELETE FROM
+			PROJECT_SKILL_TABLE
+		WHERE
+			PRJ_SEQ = #{prjSeq}
+	</delete>
+	
+	<insert id="addProjectSkill" parameterType="com.example.demo.dto.UserDTO">
+			INSERT INTO 
+				PROJECT_SKILL_TABLE (
+					PRJ_SEQ, 
+					SK_CD
+					)
+			VALUES	(
+				#{prjSeq}, 
+				#{skill}
+				)
+	</insert>
+	
+</mapper>
