@@ -62,10 +62,21 @@ public class UserService {
 	}
 	
 	public void addUserSkill(UserDTO userDTO) {
+		userDAO.delUserSkill(userDTO);
+		
 		for(int i = 0; i<userDTO.getSkillList().size(); i++) {
 			userDTO.setSkills((String) userDTO.getSkillList().get(i));
 			userDAO.addUserSkill(userDTO);
 		}
+		return;
+	}
+	
+	public UserDTO getUserDetail(UserDTO userDTO) {
+		return userDAO.getUserDetail(userDTO);
+	}
+
+	public void editUser(UserDTO userDTO) {
+		userDAO.editUser(userDTO);
 		return;
 	}
 }

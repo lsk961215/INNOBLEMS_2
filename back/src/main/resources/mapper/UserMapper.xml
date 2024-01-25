@@ -179,7 +179,8 @@
 		 		SALT,
 		 		USR_ZIP,
 		 		USR_RAD,
-		 		USR_DAD
+		 		USR_DAD,
+		 		USR_IMG
 		 		)
 		 VALUES (
 		 	USR_SEQ.NEXTVAL,
@@ -198,7 +199,8 @@
 		 	#{salt},
 			#{usrZIP},
 			#{usrRAD},
-			#{usrDAD}
+			#{usrDAD},
+			#{usrImg}
 		 )
 		<selectKey resultType="int" keyProperty="usrSeq" order="AFTER">
 	        SELECT USR_SEQ FROM USER_INFO WHERE USR_ID = #{usrId}
@@ -206,7 +208,8 @@
 	</insert>
 	
 	<select id="getUserDetail" parameterType="com.example.demo.dto.UserDTO" resultMap="userMap">
-	   SELECT a.*, b.SKILLS
+	   SELECT a.USR_SEQ, a.USR_NM, a.USR_ID, a.USR_BDT, a.GD_CD, a.USR_IN_DT, a.ST_CD, a.RA_CD, a.GR_CD, 
+	   a.DV_CD, a.USR_PN, a.USR_EM, a.USR_ZIP, a.USR_RAD, a.USR_DAD, a.USR_IMG , b.SKILLS
 		FROM USER_INFO a
 		LEFT OUTER JOIN (SELECT USR_SEQ
 		     , LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
@@ -216,7 +219,7 @@
 		WHERE a.USR_SEQ = #{usrSeq}
 	</select>
 	
-	<update id="saveUser" parameterType="com.example.demo.dto.UserDTO">
+	<update id="editUser" parameterType="com.example.demo.dto.UserDTO">
 		 UPDATE
 		 	USER_INFO
 		 SET
@@ -236,10 +239,12 @@
 			</if>
 		 	USR_PN = #{usrPn},
 		 	USR_EM = #{usrEm},
-		 	USR_AD = #{usrAd},
 		 	<if test="salt != '' and salt != null">
-				SALT = #{salt}
+				SALT = #{salt},
 			</if>
+		 	USR_ZIP = #{usrZIP},
+		 	USR_RAD = #{usrRAD},
+		 	USR_DAD = #{usrDAD}
 		WHERE
 			USR_SEQ = #{usrSeq}
 	</update>

@@ -58,12 +58,46 @@ public class UserController {
 			
 			userService.addUserSkill(userDTO);
 			
-			return "0";
+			return "1";
 		}catch(Exception e){
 			e.printStackTrace();
 			System.out.println("오류가 발생했습니다.");
 			
+			return "-1";
+		}
+	}
+	
+	@RequestMapping("/getUserDetail")
+	public UserDTO getUserDetail (HttpServletRequest request, @RequestBody UserDTO userDTO) {
+		return userService.getUserDetail(userDTO);
+	}
+	
+	@RequestMapping("/editUser")
+	public String editUser(HttpServletRequest request, @RequestBody UserDTO userDTO) throws Exception {
+		try {
+			if(userDTO.getUsrPw() != null) {
+				String save_pw = userDTO.getUsrPw();
+				
+				new SHA256();
+				
+				String salt = SHA256.createSalt(save_pw);
+				
+				String pw = SHA256.encrypt(save_pw, salt);
+				
+				userDTO.setUsrPw(pw);
+				userDTO.setSalt(salt);
+			}
+			
+			userService.editUser(userDTO);
+			
+			userService.addUserSkill(userDTO);
+			
 			return "1";
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("오류가 발생했습니다.");
+			
+			return "-1";
 		}
 	}
 }

@@ -32,4 +32,17 @@ public class UserDAO {
 		sqlSession.insert("skill.addUserSkill", userDTO);
 		return;
 	}
+	
+	public UserDTO getUserDetail(UserDTO userDTO) {
+		return sqlSession.selectOne("user.getUserDetail", userDTO);
+	}
+	
+	public void delUserSkill(UserDTO userDTO) {
+		sqlSession.delete("skill.delUserSkill", userDTO);
+	}
+	
+	public void editUser(UserDTO userDTO) {
+		sqlSession.update("user.editUser", userDTO);
+		return;
+	}
 }

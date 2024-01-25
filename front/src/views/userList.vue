@@ -82,7 +82,7 @@
 									<td>{{ item.grCD }}</td>
 									<td>{{ item.skills }}</td>
 									<td>{{ item.stCD }}</td>
-									<td><input type="button" value="상세/수정"></td>
+									<td><input type="button" value="상세/수정" :id="item.usrSeq" v-on:click="getUserDetail($event)"></td>
 									<td><input type="button" value="프로젝트 관리"></td>
 								</tr>
 							</tbody>
@@ -224,6 +224,10 @@ export default {
 
 		add: function(){
 			window.open("goAddUser", "openForm", "width=1000px height=600px");
+		},
+
+		getUserDetail: function(event){
+			window.open("userDetail?usrSeq="+event.currentTarget.id, "openForm", "width=1000px height=600px");
 		}
 	}
 }

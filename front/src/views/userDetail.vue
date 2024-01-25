@@ -11,14 +11,25 @@
                     <small class="essential"><a class="star">*</a>는 필수항목</small>
                     <table>
                         <tr>
-                            <td>사원명<a class="star">*</a></td>
-                            <td><input type="text" v-model="requestBody.usrNm" id="usrNm" maxlength="10" style="ime-mode:active;" placeholder="한글 10글자 이내"></td>
+                            <td>사원번호</td>
+                            <td><input type="text" v-model="requestBody.usrSeq" id="usrSeq" maxlength="10" readonly></td>
                             <td>입사일<a class="star">*</a></td>
                             <td><input type="date" v-model="requestBody.usrINDT" id="usrINDT"></td>
+                        </tr>
+                        <tr>
+                            <td>사원명<a class="star">*</a></td>
+                            <td><input type="text" v-model="requestBody.usrNm" id="usrNm" maxlength="10" style="ime-mode:active;" placeholder="한글 10글자 이내"></td>
+                            <td>재직상태<a class="star">*</a></td>
+                            <td>
+                                <select name="stCD" v-model="requestBody.stCD" id="stCD">
+                                    <option value=null>선택안함</option>
+                                    <option v-for="item in stCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
+                                </select>
+                            </td>
                         </tr> 
                         <tr>
                             <td>아이디<a class="star">*</a></td>
-                            <td><input type="text" v-model="requestBody.usrId" id="usrId" maxlength="20" placeholder="영문 20글자 이내"></td>
+                            <td><input type="text" v-model="requestBody.usrId" id="usrId" maxlength="20" placeholder="영문 20글자 이내" readonly></td>
                             <td>직급</td>
                             <td>
                                 <select name="raCD" v-model="requestBody.raCD" id="raCD">
@@ -29,7 +40,7 @@
                         </tr> 
                         <tr>
                             <td>비밀번호<a class="star">*</a></td>
-                            <td><input :type="pwType" v-model="requestBody.usrPw" id="usrPw" maxlength="16" placeholder="영문,특수문자 포함 16글자 이내"></td>
+                            <td><button class="pwChangeButton" :on-click="changePwButton">비밀번호 변경하기</button></td>
                             <td>기술등급</td>
                             <td>
                                 <select name="grCD" v-model="requestBody.grCD" id="grCD">
@@ -40,7 +51,7 @@
                         </tr> 
                         <tr>
                             <td>비밀번호 확인<a class="star">*</a></td>
-                            <td><input :type="pwType" v-model="requestBody.usrPwCheck" id="usrPwCheck" maxlength="16" placeholder="영문,특수문자 포함 16글자 이내"></td>
+                            <td></td>
                             <td>개발분야</td>
                             <td>
                                 <select name="dvCD" v-model="requestBody.dvCD" id="dvCD">
@@ -101,7 +112,9 @@
                 </div>
             </div>
             <div class="buttonSection">
-                <button id="add" v-on:click="add">등록</button>
+
+                {{ requestBody }}
+                <button id="add" v-on:click="eidt">수정</button>
                 <button id="cancel" v-on:click="cancel">취소</button>
             </div>
         </section>
@@ -122,16 +135,16 @@ export default {
                 usrNm: '',
                 usrINDT: '',
                 usrId: '',
-                raCD: null,
+                raCD: '',
                 usrPw: '',
                 usrPwCheck: '',
-				grCD: null,
-				stCD: null,
-                dvCD: null,
+				grCD: '',
+				stCD: '',
+                dvCD: '',
                 usrPn: '',
                 usrBDT: '',
                 usrEm: '',
-                gdCD: null,
+                gdCD: '',
 				pageNum: '',
 				skillList: [],
 				skills: '',
@@ -187,7 +200,26 @@ export default {
         }
     },
 
+    created() {
+        this.requestBody.usrSeq = this.$route.query.usrSeq
+
+        this.getUserDetail()
+    },
+
     methods: {
+        getUserDetail: function() {
+            let vm = this
+            axios.post('http://localhost:8080/getUserDetail', this.requestBody)
+			.then(function (response) {
+				vm.requestBody = response.data
+
+                vm.requestBody.skillList = response.data.skills.split(",")
+			})
+			.catch(function (error) {
+				console.log(error)
+			})
+        },
+
         daumMap: function() {
             new window.daum.Postcode({
                 oncomplete: (data) => {
@@ -205,7 +237,7 @@ export default {
             }
         },
 
-        add: function() {
+        eidt: function() {
             const formData = new FormData()
             const fileInput = document.getElementById('image')
 
@@ -226,7 +258,7 @@ export default {
 
                         this.requestBody.usrImg = tmp_usrImg
 
-                        axios.post('http://localhost:8080/addUser', this.requestBody)
+                        axios.post('http://localhost:8080/editUser', this.requestBody)
                         .then(function (response) {
                             if(response.data == 1){
                                 alert("등록되었습니다.")
@@ -245,17 +277,17 @@ export default {
                     console.log(error);
                 })
             } else {
-                axios.post('http://localhost:8080/addUser', this.requestBody)
-                .then(function (response) {
-                    if(response.data == 1){
-                        alert("등록되었습니다.")
-                    } else {
-                        alert("잘못된 정보입니다.")
-                    }
-                })
-                .catch(function (error) {
-                    console.log(error)
-                })
+                axios.post('http://localhost:8080/editUser', this.requestBody)
+                        .then(function (response) {
+                            if(response.data == 1){
+                                alert("등록되었습니다.")
+                            } else {
+                                alert("잘못된 정보입니다.")
+                            }
+                        })
+                        .catch(function (error) {
+                            console.log(error)
+                        })
             }
         },
 

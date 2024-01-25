@@ -4,6 +4,7 @@ import testPage from '../views/testPage.vue'
 import userList from '../views/userList.vue'
 import codeList from '../views/codeList.vue'
 import addUser from '../views/addUser.vue'
+import userDetail from '../views/userDetail.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -13,6 +14,7 @@ const router = createRouter({
         { path: '/userList', component: userList},
         { path: '/codeList', component: codeList},
         { path: '/goAddUser', component: addUser},
+        { path: '/userDetail', component: userDetail},
     ],
 })
 

@@ -45,6 +45,7 @@ public class FileController {
                     
                     return saveFileName;
                 }
+    
             } else {
             	return "-1";
             }
@@ -53,6 +54,6 @@ public class FileController {
         {
             System.out.println(e);
         }
-        return "redirect:form";
+        return "-1";
     }
 }
