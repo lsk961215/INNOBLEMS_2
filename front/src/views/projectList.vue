@@ -1,6 +1,6 @@
 <template>
     <div class="wrap">
-		<div class="pageTitle"><h1>사원 관리</h1></div>
+		<div class="pageTitle"><h1>프로젝트 관리</h1></div>
 		<div class="middle">
 			<asideMenu></asideMenu>
 			<section>
@@ -8,23 +8,19 @@
 					<div class="filterTitle"><h1>검색 조건</h1></div>
 					<div class="filterDetail">
 						<div class="filterSection_1">
-							<small>사원번호</small>
-							<input name="usrSeq" id="usrSeq" type="text" v-model="requestBody.usrSeq">
-							<small>사원명</small>
-							<input name="usrNm" id="usrNm" type="text" v-model="requestBody.usrNm">
-							<small>기술등급</small>
-							<select name="grCD" id="grCD" v-model="requestBody.grCD">
+							<small>프로젝트 번호</small>
+							<input name="prjSeq" id="prjSeq" type="text" v-model="requestBody.prjSeq">
+							<small>프로젝트명</small>
+							<input name="prjNm" id="prjNm" type="text" v-model="requestBody.prjNm">
+							<small>고객사명</small>
+							<select name="cusCD" id="cusCD" v-model="requestBody.cusCD">
 								<option value="0">선택</option>
-								<option v-for="item in grCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
-							</select>
-							<small>재직상태</small>
-							<select name="stCD" id="stCD" v-model="requestBody.stCD">
-								<option value="0">선택</option>
-								<option v-for="item in stCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
+								<option v-for="item in cusCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
 							</select>
 						</div>
 						<div class="filterSection_2">
-							<small class="inDT">입사일</small> <input id="minDT" type="date" max="9999-12-31" v-model="requestBody.minDT"> ~ <input id="maxDT" type="date" max="9999-12-31" v-model="requestBody.maxDT">
+							<small class="inDT">시작일</small> <input id="minDT" type="date" max="9999-12-31" v-model="requestBody.minSTDT"> ~ <input id="maxDT" type="date" max="9999-12-31" v-model="requestBody.maxSTDT">
+							<small class="inDT">종료일</small> <input id="minDT" type="date" max="9999-12-31" v-model="requestBody.minEDDT"> ~ <input id="maxDT" type="date" max="9999-12-31" v-model="requestBody.maxEDDT">
 						</div>
 						<div class="filterSection_3">
 							<small class="skillText">보유기술</small> 
@@ -34,7 +30,7 @@
 							</template>
 						</div>
 						<div class="filterSection_4">
-							<button id="search" v-on:click="getUserList()">조회</button>
+							<button id="search" v-on:click="getProjectList()">조회</button>
 						</div>
 					</div>
 				</div>
@@ -51,53 +47,52 @@
 							<thead>
 								<tr>
 									<th class="checkHead"><input type="checkbox" id="checkAll" v-model="allSelected"></th>
-									<th class="numberHead">사원번호</th>
-									<th class="inDateHead">입사일</th>
-									<th class="rankHead">직급</th>
-									<th class="nameHead">사원명</th>
-									<th class="gradeHead">기술등급</th>
-									<th class="skillsHead">보유기술</th>
-									<th class="statusHead">재직상태</th>
+									<th class="numberHead">프로젝트 번호</th>
+									<th class="nameHead">프로젝트명</th>
+									<th class="customerHead">고객사명</th>
+									<th class="skillsHead">필요기술</th>
+									<th class="startHead">시작일</th>
+									<th class="endHead">종료일</th>
 									<th class="editHead">상세/수정</th>
-									<th class="projectHead">프로젝트 관리</th>
+									<th class="userHead">인원 관리</th>
 								</tr>
 							</thead>
-							<tbody id="tbody" v-if="userList.length == 0">
+							<tbody id="tbody" v-if="projectList.length == 0">
 								<tr>
 									<td colspan="10"><h2>검색결과가 없습니다.</h2></td>
 								</tr>
 							</tbody>
-							<tbody id="tbody" v-else-if="userList.length == null">
+							<tbody id="tbody" v-else-if="projectList.length == null">
 								<tr>
 									<td colspan="10"><h2>데이터가 없습니다.</h2></td>
 								</tr>
 							</tbody>
 							<tbody id="tbody" v-else>
-								<tr v-for="item in userList" :key="item.usrSeq">
-									<td><input type="checkbox" :value="item.usrSeq" v-model="selectList"></td>
-									<td>{{ item.usrSeq }}</td>
-									<td>{{ item.usrINDT }}</td>
-									<td>{{ item.raCD }}</td>
-									<td>{{ item.usrNm }}</td>
-									<td>{{ item.grCD }}</td>
+								<tr v-for="item in projectList" :key="item.prjSeq">
+									<td><input type="checkbox" :value="item.prjSeq" v-model="selectList"></td>
+									<td>{{ item.prjSeq }}</td>
+									<td>{{ item.prjNm }}</td>
+									<td>{{ item.cusCD }}</td>
 									<td>{{ item.skills }}</td>
-									<td>{{ item.stCD }}</td>
+									<td>{{ item.prjSTDT }}</td>
+									<td>{{ item.prjEDDT }}</td>
 									<td><input type="button" value="상세/수정" :id="item.usrSeq" v-on:click="getUserDetail($event)"></td>
-									<td><input type="button" value="프로젝트 관리"></td>
+									<td><input type="button" value="인원 관리"></td>
 								</tr>
 							</tbody>
 						</table>
 					</div>
+					{{ requestBody }}
 					<div class="resultPage">
-						<button v-if="page.beginPaging >= page.groupCount" v-on:click="getUserList(page.beginPaging - 1)">이전</button>
-						<button v-for="(item, index) in page.endPaging - (page.groupCount * (page.position - 1))" :key="index" :class="{'currentPage': page.beginPaging + index == page.pageNum }" v-on:click="getUserList(page.beginPaging + index)"> {{ page.beginPaging + index }}</button>
-						<button v-if="page.endPaging <= page.totalPaging - page.groupCount * (page.position - 1) && page.totalPaging > page.groupCount" v-on:click="getUserList(page.endPaging + 1)">다음</button>
+						<button v-if="page.beginPaging >= page.groupCount" v-on:click="getProejctList(page.beginPaging - 1)">이전</button>
+						<button v-for="(item, index) in page.endPaging - (page.groupCount * (page.position - 1))" :key="index" :class="{'currentPage': page.beginPaging + index == page.pageNum }" v-on:click="getProjectList(page.beginPaging + index)"> {{ page.beginPaging + index }}</button>
+						<button v-if="page.endPaging <= page.totalPaging - page.groupCount * (page.position - 1) && page.totalPaging > page.groupCount" v-on:click="getProjectList(page.endPaging + 1)">다음</button>
 					</div>
 					<div class="resultButtonWrap">
 						<div class="resultButton">
 							{{ selectList }}
-							<button v-if="userList.length > 0" v-on:click="add()" >등록</button>
-							<button v-if="userList.length > 0" v-on:click="del()">삭제</button>
+							<button v-if="projectList.length > 0" v-on:click="add()" >등록</button>
+							<button v-if="projectList.length > 0" v-on:click="del()">삭제</button>
 						</div>
 					</div>
 				</div>
@@ -118,18 +113,22 @@ export default {
 	data () {
 		return {
 			requestBody: {
-				usrSeq: '',
-				usrNm: '',
-				grCD: 0,
-				stCD: 0,
+				prjSeq: '',
+				prjNm: '',
+				cusCD: 0,
 				pageNum: '',
 				skillList: [],
 				skills: '',
-				minDT: '',
-				maxDT: '',
+				prjSTDT: '',
+				prjEDDT: '',
+				prjNote: '',
+				minSTDT: '',
+				maxSTDT: '',
+				minEDDT: '',
+				maxEDDT: '',
 				countPerPage: 5
 			},
-			userList: {
+			projectList: {
 
 			},
 			selectList: [],
@@ -173,20 +172,26 @@ export default {
 		return raCDs
 		},
 
+		cusCDs: function () {
+		const arr = this.$codeList.data
+		const cusCDs = arr.filter(item => item.mstCD == "CU01")
+		return cusCDs
+		},
+
 		allSelected: {
 		//getter
 		get: function() {
-			return (this.userList.length === this.selectList.length && this.userList.length != 0);
+			return (this.projectList.length === this.selectList.length && this.projectList.length != 0);
 		},
 		//setter
 		set: function(e) {
-			this.selectList = e ? this.userList.map(row=>row.usrSeq) : [];
+			this.selectList = e ? this.projectList.map(row=>row.prjSeq) : [];
 		},
 		},
 	},
 	
 	methods : {
-		getUserList: function(pageNum){
+		getProjectList: function(pageNum){
 			this.requestBody.skillList.sort()
 			this.requestBody.skills = this.requestBody.skillList.toString()
 			this.requestBody.pageNum = pageNum
@@ -195,7 +200,7 @@ export default {
 
 			axios.post('http://localhost:8080/getUserList', this.requestBody)
 			.then(function (response) {
-				vm.userList = vm.parseUserList(response.data.userList)
+				vm.projectList = vm.parseProjectList(response.data.projectList)
 
 				vm.page.beginPaging = response.data.beginPaging
 				vm.page.endPaging = response.data.endPaging
@@ -209,7 +214,7 @@ export default {
 			})
 		},
 
-		parseUserList: function(userList) {
+		parseProjectList: function(userList) {
 			var codeList = this.$codeList.data
 
 			for(var i = 0; i<userList.length; i++){

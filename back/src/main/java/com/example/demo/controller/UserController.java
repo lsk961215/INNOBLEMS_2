@@ -100,4 +100,16 @@ public class UserController {
 			return "-1";
 		}
 	}
+	
+	@RequestMapping("/delUser")
+	public int delUser(HttpServletRequest request, @RequestBody List<String> usrSeqList) throws Exception {
+		try {
+			userService.delUser(usrSeqList);
+			return 0;
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("오류가 발생했습니다.");
+			return 1;
+		}
+	}
 }

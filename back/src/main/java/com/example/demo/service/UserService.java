@@ -53,6 +53,8 @@ public class UserService {
 		resultMap.put("totalPaging", totalPaging);
 		resultMap.put("userList", userList);
 		resultMap.put("pageNum", pageNum);
+		resultMap.put("groupCount", groupCount);
+		resultMap.put("position", position);
 		
 		return resultMap;
 	}
@@ -77,6 +79,11 @@ public class UserService {
 
 	public void editUser(UserDTO userDTO) {
 		userDAO.editUser(userDTO);
+		return;
+	}
+	
+	public void delUser(List list) {
+		userDAO.delUser(list);
 		return;
 	}
 }

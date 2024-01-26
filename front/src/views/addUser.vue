@@ -5,7 +5,7 @@
             <div class="sectionMain">
                 <div class=imgSection>
                     <input type="file" id="image" @change="changeImage">
-                    <img class="image-box" src="@/assets/default.png">
+                    <img class="image-box" src="../../public/images/default.png">
                 </div>
                 <div class="detailSection">
                     <small class="essential"><a class="star">*</a>는 필수항목</small>

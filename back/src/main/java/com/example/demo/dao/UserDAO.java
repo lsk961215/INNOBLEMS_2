@@ -45,4 +45,9 @@ public class UserDAO {
 		sqlSession.update("user.editUser", userDTO);
 		return;
 	}
+	
+	public void delUser(List list) {
+		sqlSession.delete("user.delUser", list);
+		return;
+	}
 }
