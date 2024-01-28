@@ -76,7 +76,7 @@
 									<td>{{ item.skills }}</td>
 									<td>{{ item.prjSTDT }}</td>
 									<td>{{ item.prjEDDT }}</td>
-									<td><input type="button" value="상세/수정" :id="item.usrSeq" v-on:click="getUserDetail($event)"></td>
+									<td><input type="button" value="상세/수정" :id="item.prjSeq" v-on:click="getProjectDetail($event)"></td>
 									<td><input type="button" value="인원 관리"></td>
 								</tr>
 							</tbody>
@@ -198,7 +198,7 @@ export default {
 			
 			var vm = this
 
-			axios.post('http://localhost:8080/getUserList', this.requestBody)
+			axios.post('http://localhost:8080/getProjectList', vm.requestBody)
 			.then(function (response) {
 				vm.projectList = vm.parseProjectList(response.data.projectList)
 
@@ -214,54 +214,48 @@ export default {
 			})
 		},
 
-		parseProjectList: function(userList) {
+		parseProjectList: function(projectList) {
 			var codeList = this.$codeList.data
 
-			for(var i = 0; i<userList.length; i++){
-				var skillArr = userList[i].skills.split(",")
-				userList[i].skills = ""
+			for(var i = 0; i<projectList.length; i++){
+				var skillArr = projectList[i].skills.split(",")
+				projectList[i].skills = ""
 
 				for(var j = 0; j<codeList.length; j++){
-					if(codeList[j].mstCD == "RA01" && userList[i].raCD == codeList[j].dtCD){
-						userList[i].raCD = codeList[j].dtCDNM
-					}
-					if(codeList[j].mstCD == "GR01" && userList[i].grCD == codeList[j].dtCD){
-						userList[i].grCD = codeList[j].dtCDNM
-					}
-					if(codeList[j].mstCD == "ST01" && userList[i].stCD == codeList[j].dtCD){
-						userList[i].stCD = codeList[j].dtCDNM
+					if(codeList[j].mstCD == "CU01" && projectList[i].cusCD == codeList[j].dtCD){
+						projectList[i].cusCD = codeList[j].dtCDNM
 					}
 					for(var k = 0; k<skillArr.length; k++){
 						if(codeList[j].mstCD == "SK01" && skillArr[k] == codeList[j].dtCD){
 							if(k != 0){
-								userList[i].skills += ", "
+								projectList[i].skills += ", "
 							}
-							userList[i].skills += codeList[j].dtCDNM
+							projectList[i].skills += codeList[j].dtCDNM
 						}
 					}
 				}
 			}
 
-			return userList
+			return projectList
 		},
 
 		add: function(){
-			window.open("goAddUser", "openForm", "width=1000px height=600px");
+			window.open("addProject", "openForm", "width=1000px height=600px");
 		},
 
-		getUserDetail: function(event){
-			window.open("userDetail?usrSeq="+event.currentTarget.id, "openForm", "width=1000px height=600px");
+		getProjectDetail: function(event){
+			window.open("projectDetail?prjSeq="+event.currentTarget.id, "openForm", "width=1000px height=600px");
 		},
 
 		del: function(){
 			var vm = this
-			axios.post('http://localhost:8080/delUser', this.selectList)
+			axios.post('http://localhost:8080/delProject', this.selectList)
 			.then(function (response) {
 				if(response.data == 0){
 					alert("삭제 되었습니다.")
 					vm.selectList = []
 				} else {
-					alert("해당 사원은 현재 소속되어있는 프로젝트가 있습니다.")
+					alert("해당 프로젝트는 현재 소속되어있는 인원이 있습니다.")
 				}
 			})
 			.catch(function (error) {

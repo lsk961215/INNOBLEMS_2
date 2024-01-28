@@ -59,31 +59,31 @@ public class ProjectService {
 		return resultMap;
 	}
 	
-//	public int addUser(UserDTO userDTO) {
-//		return userDAO.addUser(userDTO);
-//	}
-//	
-//	public void addUserSkill(UserDTO userDTO) {
-//		userDAO.delUserSkill(userDTO);
-//		
-//		for(int i = 0; i<userDTO.getSkillList().size(); i++) {
-//			userDTO.setSkills((String) userDTO.getSkillList().get(i));
-//			userDAO.addUserSkill(userDTO);
-//		}
-//		return;
-//	}
-//	
-//	public UserDTO getUserDetail(UserDTO userDTO) {
-//		return userDAO.getUserDetail(userDTO);
-//	}
-//
-//	public void editUser(UserDTO userDTO) {
-//		userDAO.editUser(userDTO);
-//		return;
-//	}
-//	
-//	public void delUser(List list) {
-//		userDAO.delUser(list);
-//		return;
-//	}
+	public int addProject(ProjectDTO projectDTO) {
+		return projectDAO.addProject(projectDTO);
+	}
+	
+	public void addProjectSkill(ProjectDTO projectDTO) {
+		projectDAO.delProjectSkill(projectDTO);
+		
+		for(int i = 0; i<projectDTO.getSkillList().size(); i++) {
+			projectDTO.setSkills((String) projectDTO.getSkillList().get(i));
+			projectDAO.addProjectSkill(projectDTO);
+		}
+		return;
+	}
+	
+	public ProjectDTO getProjectDetail(ProjectDTO projectDTO) {
+		return projectDAO.getProjectDetail(projectDTO);
+	}
+
+	public void editProject(ProjectDTO projectDTO) {
+		projectDAO.editProject(projectDTO);
+		return;
+	}
+	
+	public void delProject(List list) {
+		projectDAO.delProject(list);
+		return;
+	}
 }

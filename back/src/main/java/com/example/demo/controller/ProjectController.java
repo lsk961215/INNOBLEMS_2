@@ -36,79 +36,55 @@ public class ProjectController {
 		return resultMap;
 	}
 	
-//	@RequestMapping("/addUser")
-//	public String addUser(HttpServletRequest request, @RequestBody UserDTO userDTO) throws Exception {
-//		Map resultMap = new HashMap();
-//		
-//		try {
-//			String join_pw = userDTO.getUsrPw();
-//			
-//			new SHA256();
-//			
-//			String salt = SHA256.createSalt(join_pw);
-//			
-//			String pw = SHA256.encrypt(join_pw, salt);
-//			
-//			userDTO.setUsrPw(pw);
-//			userDTO.setSalt(salt);
-//			
-//			int usrSeq = userService.addUser(userDTO);
-//			userDTO.setUsrSeq(usrSeq);
-//			
-//			userService.addUserSkill(userDTO);
-//			
-//			return "1";
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			System.out.println("오류가 발생했습니다.");
-//			
-//			return "-1";
-//		}
-//	}
-//	
-//	@RequestMapping("/getUserDetail")
-//	public UserDTO getUserDetail (HttpServletRequest request, @RequestBody UserDTO userDTO) {
-//		return userService.getUserDetail(userDTO);
-//	}
-//	
-//	@RequestMapping("/editUser")
-//	public String editUser(HttpServletRequest request, @RequestBody UserDTO userDTO) throws Exception {
-//		try {
-//			if(userDTO.getUsrPw() != null) {
-//				String save_pw = userDTO.getUsrPw();
-//				
-//				new SHA256();
-//				
-//				String salt = SHA256.createSalt(save_pw);
-//				
-//				String pw = SHA256.encrypt(save_pw, salt);
-//				
-//				userDTO.setUsrPw(pw);
-//				userDTO.setSalt(salt);
-//			}
-//			
-//			userService.editUser(userDTO);
-//			
-//			userService.addUserSkill(userDTO);
-//			
-//			return "1";
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			System.out.println("오류가 발생했습니다.");
-//			
-//			return "-1";
-//		}
-//	}
-//	
-//	@RequestMapping("/delUser")
-//	public int delUser(HttpServletRequest request, @RequestBody List<String> usrSeqList) throws Exception {
-//		try {
-//			userService.delUser(usrSeqList);
-//			return 0;
-//		}catch(Exception e){
-//			e.printStackTrace();
-//			System.out.println("오류가 발생했습니다.");
-//			return 1;
-//		}
-//	}
+	@RequestMapping("/addProject")
+	public String addProject(HttpServletRequest request, @RequestBody ProjectDTO projectDTO) throws Exception {
+		Map resultMap = new HashMap();
+		
+		try {
+			int prjSeq = projectService.addProject(projectDTO);
+			projectDTO.setPrjSeq(prjSeq);
+			
+			projectService.addProjectSkill(projectDTO);
+			
+			return "1";
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("오류가 발생했습니다.");
+			
+			return "-1";
+		}
+	}
+	
+	@RequestMapping("/getProjectDetail")
+	public ProjectDTO getProjectDetail (HttpServletRequest request, @RequestBody ProjectDTO projectDTO) {
+		return projectService.getProjectDetail(projectDTO);
+	}
+	
+	@RequestMapping("/editProject")
+	public String editProject(HttpServletRequest request, @RequestBody ProjectDTO projectDTO) throws Exception {
+		try {
+			projectService.editProject(projectDTO);
+			
+			projectService.addProjectSkill(projectDTO);
+			
+			return "1";
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("오류가 발생했습니다.");
+			
+			return "-1";
+		}
+	}
+	
+	@RequestMapping("/delProject")
+	public int delProject(HttpServletRequest request, @RequestBody List<String> prjSeqList) throws Exception {
+		try {
+			projectService.delProject(prjSeqList);
+			return 0;
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("오류가 발생했습니다.");
+			return 1;
+		}
+	}
 }

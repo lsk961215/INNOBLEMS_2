@@ -114,7 +114,7 @@
             <div class="buttonSection">
 
                 {{ requestBody }}
-                <button id="add" v-on:click="eidt">수정</button>
+                <button id="add" v-on:click="edit">수정</button>
                 <button id="cancel" v-on:click="cancel">취소</button>
             </div>
         </section>
@@ -237,7 +237,7 @@ export default {
             }
         },
 
-        eidt: function() {
+        edit: function() {
             const formData = new FormData()
             const fileInput = document.getElementById('image')
 
@@ -261,7 +261,7 @@ export default {
                         axios.post('http://localhost:8080/editUser', this.requestBody)
                         .then(function (response) {
                             if(response.data == 1){
-                                alert("등록되었습니다.")
+                                alert("수정되었습니다.")
                             } else {
                                 alert("잘못된 정보입니다.")
                             }
@@ -280,7 +280,7 @@ export default {
                 axios.post('http://localhost:8080/editUser', this.requestBody)
                         .then(function (response) {
                             if(response.data == 1){
-                                alert("등록되었습니다.")
+                                alert("수정되었습니다.")
                             } else {
                                 alert("잘못된 정보입니다.")
                             }

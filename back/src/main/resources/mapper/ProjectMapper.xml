@@ -13,7 +13,7 @@
 	  <result column="SKILLS" property="skills"/>
 	</resultMap>
 	
-	<select id="getProjectList" parameterType="java.util.HashMap" resultMap="projectMap">
+	<select id="getProjectList" parameterType="com.example.demo.dto.ProjectDTO" resultMap="projectMap">
 	    SELECT *
 	    FROM (
 	    SELECT ROWNUM as rnum, b.*
@@ -25,42 +25,42 @@
 		FROM (
 		SELECT *
 		FROM PROJECT_SKILL_TABLE
-        <if test="projectDTO.skills != ''">
-			WHERE SK_CD IN <foreach item="item" collection="skills" open="(" separator="," close=")"> #{item} </foreach>
+		<if test="skillList.size != 0">
+			WHERE SK_CD IN <foreach item="item" collection="skillList" open="(" separator="," close=")"> #{item} </foreach>
 		</if>
 		)
 		GROUP BY PRJ_SEQ) b
 		ON a.PRJ_SEQ = b.PRJ_SEQ
 		WHERE 1=1
-        <if test="projectDTO.skills != ''">
-			AND SKILLS = #{projectDTO.skills}
+        <if test="skillList.size != 0">
+			AND SKILLS = #{skills}
 		</if>
-		<if test="projectDTO.prjSeq != 0">
-			AND a.PRJ_SEQ = #{projectDTO.prjSeq}
+		<if test="prjSeq != 0">
+			AND a.PRJ_SEQ = #{prjSeq}
 		</if>
-		<if test="projectDTO.prjNm != '' and projectDTO.prjNm != null">
-			AND a.PRJ_NM like '%' || #{projectDTO.prjNm} || '%'
+		<if test="prjNm != ''">
+			AND a.PRJ_NM like '%' || #{prjNm} || '%'
 		</if>
-		<if test="projectDTO.cusCD != 0">
-			AND a.CUS_CD = #{projectDTO.cusCD}
+		<if test="cusCD != 0">
+			AND a.CUS_CD = #{cusCD}
 		</if>
-		<if test="projectDTO.minSTDT != '' and projectDTO.maxSTDT != ''">
-			AND a.PRJ_ST_DT BETWEEN #{projectDTO.minSTDT} AND #{projectDTO.maxSTDT}
+		<if test="minSTDT != '' and maxSTDT != ''">
+			AND a.PRJ_ST_DT BETWEEN #{minSTDT} AND #{maxSTDT}
 		</if>
-		<if test="projectDTO.minSTDT == '' and projectDTO.maxSTDT != ''">
-			AND a.PRJ_ST_DT <![CDATA[ <= ]]> #{projectDTO.maxSTDT}
+		<if test="minSTDT == '' and maxSTDT != ''">
+			AND a.PRJ_ST_DT <![CDATA[ <= ]]> #{maxSTDT}
 		</if>
-		<if test="projectDTO.minSTDT != '' and projectDTO.maxSTDT == ''">
-			AND a.PRJ_ST_DT <![CDATA[ >= ]]> #{projectDTO.minSTDT}
+		<if test="minSTDT != '' and maxSTDT == ''">
+			AND a.PRJ_ST_DT <![CDATA[ >= ]]> #{minSTDT}
 		</if>
-		<if test="projectDTO.minEDDT != '' and projectDTO.maxEDDT != ''">
-			AND a.PRJ_ED_DT BETWEEN #{projectDTO.minEDDT} AND #{projectDTO.maxEDDT}
+		<if test="minEDDT != '' and maxEDDT != ''">
+			AND a.PRJ_ED_DT BETWEEN #{minEDDT} AND #{maxEDDT}
 		</if>
-		<if test="projectDTO.minEDDT == '' and projectDTO.maxEDDT != ''">
-			AND a.PRJ_ED_DT <![CDATA[ <= ]]> #{projectDTO.maxEDDT}
+		<if test="minEDDT == '' and maxEDDT != ''">
+			AND a.PRJ_ED_DT <![CDATA[ <= ]]> #{maxEDDT}
 		</if>
-		<if test="projectDTO.minEDDT != '' and projectDTO.maxEDDT == ''">
-			AND a.PRJ_ED_DT <![CDATA[ >= ]]> #{projectDTO.minEDDT}
+		<if test="minEDDT != '' and maxEDDT == ''">
+			AND a.PRJ_ED_DT <![CDATA[ >= ]]> #{minEDDT}
 		</if>
 		) a
 			
@@ -94,42 +94,42 @@
 		FROM (
 		SELECT *
 		FROM PROJECT_SKILL_TABLE
-        <if test="projectDTO.skills != ''">
-			WHERE SK_CD IN <foreach item="item" collection="skills" open="(" separator="," close=")"> #{item} </foreach>
+        <if test="skillList.size != 0">
+			WHERE SK_CD IN <foreach item="item" collection="skillList" open="(" separator="," close=")"> #{item} </foreach>
 		</if>
 		)
 		GROUP BY PRJ_SEQ) b
 		ON a.PRJ_SEQ = b.PRJ_SEQ
 		WHERE 1=1
-        <if test="projectDTO.skills != ''">
-			AND SKILLS = #{projectDTO.skills}
+       <if test="skillList.size != 0">
+			AND SKILLS = #{skills}
 		</if>
-		<if test="projectDTO.prjSeq != 0">
-			AND a.PRJ_SEQ = #{projectDTO.prjSeq}
+		<if test="prjSeq != 0">
+			AND a.PRJ_SEQ = #{prjSeq}
 		</if>
-		<if test="projectDTO.prjNm != '' and projectDTO.prjNm != null">
-			AND a.PRJ_NM like '%' || #{projectDTO.prjNm} || '%'
+		<if test="prjNm != ''">
+			AND a.PRJ_NM like '%' || #{prjNm} || '%'
 		</if>
-		<if test="projectDTO.cusCD != 0">
-			AND a.CUS_CD = #{projectDTO.cusCD}
+		<if test="cusCD != 0">
+			AND a.CUS_CD = #{cusCD}
 		</if>
-		<if test="projectDTO.minSTDT != '' and projectDTO.maxSTDT != ''">
-			AND a.PRJ_ST_DT BETWEEN #{projectDTO.minSTDT} AND #{projectDTO.maxSTDT}
+		<if test="minSTDT != '' and maxSTDT != ''">
+			AND a.PRJ_ST_DT BETWEEN #{minSTDT} AND #{maxSTDT}
 		</if>
-		<if test="projectDTO.minSTDT == '' and projectDTO.maxSTDT != ''">
-			AND a.PRJ_ST_DT <![CDATA[ <= ]]> #{projectDTO.maxSTDT}
+		<if test="minSTDT == '' and maxSTDT != ''">
+			AND a.PRJ_ST_DT <![CDATA[ <= ]]> #{maxSTDT}
 		</if>
-		<if test="projectDTO.minSTDT != '' and projectDTO.maxSTDT == ''">
-			AND a.PRJ_ST_DT <![CDATA[ >= ]]> #{projectDTO.minSTDT}
+		<if test="minSTDT != '' and maxSTDT == ''">
+			AND a.PRJ_ST_DT <![CDATA[ >= ]]> #{minSTDT}
 		</if>
-		<if test="projectDTO.minEDDT != '' and projectDTO.maxEDDT != ''">
-			AND a.PRJ_ED_DT BETWEEN #{projectDTO.minEDDT} AND #{projectDTO.maxEDDT}
+		<if test="minEDDT != '' and maxEDDT != ''">
+			AND a.PRJ_ED_DT BETWEEN #{minEDDT} AND #{maxEDDT}
 		</if>
-		<if test="projectDTO.minEDDT == '' and projectDTO.maxEDDT != ''">
-			AND a.PRJ_ED_DT <![CDATA[ <= ]]> #{projectDTO.maxEDDT}
+		<if test="minEDDT == '' and maxEDDT != ''">
+			AND a.PRJ_ED_DT <![CDATA[ <= ]]> #{maxEDDT}
 		</if>
-		<if test="projectDTO.minEDDT != '' and projectDTO.maxEDDT == ''">
-			AND a.PRJ_ED_DT <![CDATA[ >= ]]> #{projectDTO.minEDDT}
+		<if test="minEDDT != '' and maxEDDT == ''">
+			AND a.PRJ_ED_DT <![CDATA[ >= ]]> #{minEDDT}
 		</if>
 		) a
 			
@@ -184,7 +184,7 @@
         WHERE a.PRJ_SEQ = #{prjSeq}
 	</select>
 	
-	<update id="saveProject" parameterType="com.example.demo.dto.ProjectDTO">
+	<update id="editProject" parameterType="com.example.demo.dto.ProjectDTO">
 		 UPDATE
 		 	PROJECT_INFO
 		 SET

@@ -241,7 +241,7 @@ export default {
 		},
 
 		add: function(){
-			window.open("goAddUser", "openForm", "width=1000px height=600px");
+			window.open("addUser", "openForm", "width=1000px height=600px");
 		},
 
 		getUserDetail: function(event){

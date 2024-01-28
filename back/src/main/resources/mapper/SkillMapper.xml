@@ -23,14 +23,14 @@
 			USR_SEQ = #{usrSeq}
 	</delete>
 	
-	<delete id="delProjectSkill" parameterType="com.example.demo.dto.UserDTO">
+	<delete id="delProjectSkill" parameterType="com.example.demo.dto.ProjectDTO">
 		DELETE FROM
 			PROJECT_SKILL_TABLE
 		WHERE
 			PRJ_SEQ = #{prjSeq}
 	</delete>
 	
-	<insert id="addProjectSkill" parameterType="com.example.demo.dto.UserDTO">
+	<insert id="addProjectSkill" parameterType="com.example.demo.dto.ProjectDTO">
 			INSERT INTO 
 				PROJECT_SKILL_TABLE (
 					PRJ_SEQ, 
@@ -38,7 +38,7 @@
 					)
 			VALUES	(
 				#{prjSeq}, 
-				#{skill}
+				#{skills}
 				)
 	</insert>
 	

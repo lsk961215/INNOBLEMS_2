@@ -22,32 +22,32 @@ public class ProjectDAO {
 	public int getProjectTotal(ProjectDTO projectDTO) {
 		return sqlSession.selectOne("project.getProjectTotal", projectDTO);
 	}
-//	
-//	public int addUser(UserDTO userDTO) {
-//		sqlSession.insert("user.addUser", userDTO);
-//		return userDTO.getUsrSeq();
-//	}
-//	
-//	public void addUserSkill(UserDTO userDTO) {
-//		sqlSession.insert("skill.addUserSkill", userDTO);
-//		return;
-//	}
-//	
-//	public UserDTO getUserDetail(UserDTO userDTO) {
-//		return sqlSession.selectOne("user.getUserDetail", userDTO);
-//	}
-//	
-//	public void delUserSkill(UserDTO userDTO) {
-//		sqlSession.delete("skill.delUserSkill", userDTO);
-//	}
-//	
-//	public void editUser(UserDTO userDTO) {
-//		sqlSession.update("user.editUser", userDTO);
-//		return;
-//	}
-//	
-//	public void delUser(List list) {
-//		sqlSession.delete("user.delUser", list);
-//		return;
-//	}
+	
+	public int addProject(ProjectDTO projectDTO) {
+		sqlSession.insert("project.addProject", projectDTO);
+		return projectDTO.getPrjSeq();
+	}
+	
+	public void addProjectSkill(ProjectDTO projectDTO) {
+		sqlSession.insert("skill.addProjectSkill", projectDTO);
+		return;
+	}
+	
+	public ProjectDTO getProjectDetail(ProjectDTO projectDTO) {
+		return sqlSession.selectOne("project.getProjectDetail", projectDTO);
+	}
+	
+	public void delProjectSkill(ProjectDTO projectDTO) {
+		sqlSession.delete("skill.delProjectSkill", projectDTO);
+	}
+	
+	public void editProject(ProjectDTO projectDTO) {
+		sqlSession.update("project.editProject", projectDTO);
+		return;
+	}
+	
+	public void delProject(List list) {
+		sqlSession.delete("project.delProject", list);
+		return;
+	}
 }
