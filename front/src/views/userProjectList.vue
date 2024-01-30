@@ -5,26 +5,19 @@
 			<asideMenu></asideMenu>
 			<section>
 				<div class="filter"> 
-					<div class="filterTitle"><h1>검색 조건</h1></div>
+					<div class="filterTitle"><h1>사원 정보</h1></div>
 					<div class="filterDetail">
 						<div class="filterSection_1">
 							<small>사원번호</small>
-							<input name="usrSeq" id="usrSeq" type="text" v-model="requestBody.usrSeq">
+							<input name="usrSeq" id="usrSeq" type="text" v-model="requestBody.usrSeq" readonly>
 							<small>사원명</small>
-							<input name="usrNm" id="usrNm" type="text" v-model="requestBody.usrNm">
+							<input name="usrNm" id="usrNm" type="text" v-model="requestBody.usrNm" readonly>
+							<small>직급</small>
+							<input name="raCD" id="raCD" type="text" v-model="requestBody.raCD" readonly>
 							<small>기술등급</small>
-							<select name="grCD" id="grCD" v-model="requestBody.grCD">
-								<option value="0">선택</option>
-								<option v-for="item in grCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
-							</select>
+							<input name="grCD" id="grCD" type="text" v-model="requestBody.grCD" readonly>
 							<small>재직상태</small>
-							<select name="stCD" id="stCD" v-model="requestBody.stCD">
-								<option value="0">선택</option>
-								<option v-for="item in stCDs" :key="item.id" :value="item.dtCD">{{ item.dtCDNM }}</option>
-							</select>
-						</div>
-						<div class="filterSection_2">
-							<small class="inDT">입사일</small> <input id="minDT" type="date" max="9999-12-31" v-model="requestBody.minDT"> ~ <input id="maxDT" type="date" max="9999-12-31" v-model="requestBody.maxDT">
+							<input name="stCD" id="stCD" type="text" v-model="requestBody.stCD" readonly>
 						</div>
 						<div class="filterSection_3">
 							<small class="skillText">보유기술</small> 
@@ -32,9 +25,6 @@
 								<input type="checkbox" class="skill" :id="item.dtCD" :value="item.dtCD" v-model="requestBody.skillList">
 								<label :for="item.dtCD">{{ item.dtCDNM }} </label>
 							</template>
-						</div>
-						<div class="filterSection_4">
-							<button id="search" v-on:click="getUserList()">조회</button>
 						</div>
 					</div>
 				</div>
@@ -83,7 +73,7 @@
 									<td>{{ item.skills }}</td>
 									<td>{{ item.stCD }}</td>
 									<td><input type="button" value="상세/수정" :id="item.usrSeq" v-on:click="getUserDetail($event)"></td>
-									<td><input type="button" value="프로젝트 관리" :id="item.usrSeq" v-on:click="getUserProject($event)"></td>
+									<td><input type="button" value="프로젝트 관리"></td>
 								</tr>
 							</tbody>
 						</table>
@@ -110,7 +100,6 @@
 
 import axios from 'axios';
 import asideMenu from '../components/asideMenu.vue'
-import router from '@/router';
 
 export default {
 
@@ -123,6 +112,7 @@ export default {
 				usrNm: '',
 				grCD: 0,
 				stCD: 0,
+				raCD: 0,
 				pageNum: '',
 				skillList: [],
 				skills: '',
@@ -185,30 +175,26 @@ export default {
 		},
 		},
 	},
+
+	created() {
+		this.requestBody.usrSeq = this.$route.query.usrSeq
+
+		this.getUserProjectList()
+	},
 	
 	methods : {
-		getUserList: function(pageNum){
-			this.requestBody.skillList.sort()
-			this.requestBody.skills = this.requestBody.skillList.toString()
-			this.requestBody.pageNum = pageNum
-			
-			var vm = this
-
-			axios.post('http://localhost:8080/getUserList', this.requestBody)
+		getUserProjectList: function() {
+            let vm = this
+            axios.post('http://localhost:8080/getUserProjectList', this.requestBody)
 			.then(function (response) {
-				vm.userList = vm.parseUserList(response.data.userList)
+				vm.requestBody = response.data
 
-				vm.page.beginPaging = response.data.beginPaging
-				vm.page.endPaging = response.data.endPaging
-				vm.page.pageNum = response.data.pageNum
-				vm.page.totalPaging = response.data.totalPaging
-				vm.page.groupCount = response.data.groupCount
-				vm.page.position = response.data.position
+                vm.requestBody.skillList = response.data.skills.split(",")
 			})
 			.catch(function (error) {
 				console.log(error)
 			})
-		},
+        },
 
 		parseUserList: function(userList) {
 			var codeList = this.$codeList.data
@@ -245,14 +231,6 @@ export default {
 			window.open("addUser", "openForm", "width=1000px height=600px");
 		},
 
-		getUserDetail: function(event){
-			window.open("userDetail?usrSeq="+event.currentTarget.id, "openForm", "width=1000px height=600px");
-		},
-
-		getUserProject: function(event){
-			router.push('userProjectList?usrSeq='+ event.currentTarget.id)
-		},
-
 		del: function(){
 			var vm = this
 			axios.post('http://localhost:8080/delUser', this.selectList)
@@ -267,7 +245,7 @@ export default {
 			.catch(function (error) {
 				console.log(error)
 			})
-		}
+		},
 	}
 }
 </script>

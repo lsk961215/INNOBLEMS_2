@@ -7,6 +7,8 @@ import addUser from '../views/addUser.vue'
 import addProject from '../views/addProject.vue'
 import userDetail from '../views/userDetail.vue'
 import projectDetail from '../views/projectDetail.vue'
+import userProjectList from '../views/userProjectList.vue'
+import test from '../views/test.vue'
 
 const router = createRouter({
     history: createWebHistory(),
@@ -19,6 +21,8 @@ const router = createRouter({
         { path: '/userDetail', component: userDetail},
         { path: '/projectDetail', component: projectDetail},
         { path: '/addProject', component: addProject},
+        { path: '/userProjectList', component: userProjectList},
+        { path: '/test', component: test},
     ],
 })
 

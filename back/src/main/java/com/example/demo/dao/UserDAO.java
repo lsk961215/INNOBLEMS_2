@@ -50,4 +50,12 @@ public class UserDAO {
 		sqlSession.delete("user.delUser", list);
 		return;
 	}
+	
+	public List getUserProjectList(UserDTO userDTO) {
+		return sqlSession.selectList("user.getUserProjectList", userDTO);
+	}
+	
+	public int getUserProjectTotal(UserDTO userDTO) {
+		return sqlSession.selectOne("user.getUserProjectTotal", userDTO);
+	}
 }

@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="userProject">
+
+	<resultMap id="userProjectMap" type="com.example.demo.dto.UserProjectDTO">
+		<result column="USR_NM" property="usrNm"/>
+		<result column="ST_CD" property="stCD"/>
+		<result column="RA_CD" property="raCD"/>
+		<result column="GR_CD" property="grCD"/>
+		<result column="USR_SEQ" property="usrSeq"/>
+		<result column="PRJ_SEQ" property="prjSeq"/>
+		<result column="PRJ_NM" property="prjNm"/>
+		<result column="USR_PRJ_IN_DT" property="usrPrjINDT"/>
+		<result column="USR_PRJ_OT_DT" property="usrPrjOTDT"/>
+		<result column="CUS_CD" property="cusCD"/>
+		<result column="RL_CD" property="rlCD"/>
+		<result column="PRJ_ST_DT" property="prjSTDT"/>	  
+		<result column="PRJ_ED_DT" property="prjEDDT"/>	  
+		<result column="SKILLS" property="skills"/>
+	</resultMap>
+	
+	<select id="getUserProjectList" parameterType="com.example.demo.dto.UserProjectDTO" resultMap="userProjectMap">
+	SELECT *
+	    FROM (
+		    SELECT ROWNUM as rnum, b.*
+			FROM (
+		SELECT 
+			* 
+		FROM
+			USER_PROJECT_TABLE A 
+		LEFT OUTER JOIN
+			(SELECT 
+				a.*, b.SKILLS
+			FROM 
+				PROJECT_INFO a
+			LEFT OUTER JOIN 
+			(SELECT 
+				PRJ_SEQ, LISTAGG(SK_CD, ',') 
+			WITHIN GROUP
+				(ORDER BY SK_CD) AS SKILLS
+			FROM 
+				PROJECT_SKILL_TABLE
+			GROUP BY 
+				PRJ_SEQ) b
+		ON 
+			a.PRJ_SEQ = b.PRJ_SEQ) B
+        ON 
+        	(A.PRJ_SEQ = B.PRJ_SEQ) 
+        WHERE 
+        	USR_SEQ = #{usrSeq}
+        ORDER BY USR_SEQ
+			)b
+		)
+		WHERE RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}
+	</select>
+	
+	<select id="getUserProjectTotal" parameterType="com.example.demo.dto.UserProjectDTO" resultType="int">
+	    SELECT COUNT(*)
+		FROM (
+		    SELECT 
+				* 
+			FROM
+				USER_PROJECT_TABLE A 
+			LEFT OUTER JOIN
+				(SELECT 
+					a.*, b.SKILLS
+				FROM 
+					PROJECT_INFO a
+				LEFT OUTER JOIN 
+				(SELECT 
+					PRJ_SEQ, LISTAGG(SK_CD, ',') 
+				WITHIN GROUP
+					(ORDER BY SK_CD) AS SKILLS
+				FROM 
+					PROJECT_SKILL_TABLE
+				GROUP BY 
+					PRJ_SEQ) b
+			ON 
+				a.PRJ_SEQ = b.PRJ_SEQ) B
+	        ON 
+	        	(A.PRJ_SEQ = B.PRJ_SEQ) 
+	        WHERE 
+	        	USR_SEQ = #{usrSeq}
+		)
+	</select>
+	
+	<select id="getAddUserProjectList" parameterType="java.util.HashMap" resultMap="userProjectMap">
+		SELECT *
+		FROM (
+			SELECT ROWNUM as rnum, g.*
+			FROM (
+				SELECT c.PRJ_SEQ, c.PRJ_NM, c.CUS_CD, c.PRJ_ST_DT, c.PRJ_ED_DT, d.SKILLS
+				FROM (
+				    SELECT b.PRJ_SEQ, b.PRJ_NM, b.CUS_CD, b.PRJ_ST_DT, b.PRJ_ED_DT
+				    FROM
+				    (
+				        SELECT *
+				        FROM USER_PROJECT_TABLE
+				        WHERE USR_SEQ = #{userProjectDTO.usrSeq}
+				    ) a
+				    RIGHT OUTER JOIN
+				    (
+				        SELECT *
+				        FROM PROJECT_INFO
+				    ) b
+				    ON a.PRJ_SEQ = b.PRJ_SEQ
+				    WHERE USR_SEQ IS NULL
+				    <if test="userProjectDTO.prjNm != '' and userProjectDTO.prjNm != null">
+						AND b.PRJ_NM like '%' || #{userProjectDTO.prjNm} || '%'
+					</if>
+					<if test="userProjectDTO.prjSeq != 0">
+						AND b.PRJ_SEQ = #{userProjectDTO.prjSeq}
+					</if>
+					<if test="userProjectDTO.cusCD != 0">
+						AND b.CUS_CD = #{userProjectDTO.cusCD}
+					</if>
+					<if test="userProjectDTO.minSTDT != '' and userProjectDTO.maxSTDT != ''">
+						AND b.PRJ_ST_DT BETWEEN #{userProjectDTO.minSTDT} AND #{userProjectDTO.maxSTDT}
+					</if>
+					<if test="userProjectDTO.minSTDT == '' and userProjectDTO.maxSTDT != ''">
+						AND b.PRJ_ST_DT <![CDATA[ <= ]]> #{userProjectDTO.maxSTDT}
+					</if>
+					<if test="userProjectDTO.minSTDT != '' and userProjectDTO.maxSTDT == ''">
+						AND b.PRJ_ST_DT <![CDATA[ >= ]]> #{userProjectDTO.minSTDT}
+					</if>
+					<if test="userProjectDTO.minEDDT != '' and userProjectDTO.maxEDDT != ''">
+						AND b.PRJ_ED_DT BETWEEN #{userProjectDTO.minEDDT} AND #{userProjectDTO.maxEDDT}
+					</if>
+					<if test="userProjectDTO.minEDDT == '' and userProjectDTO.maxEDDT != ''">
+						AND b.PRJ_ED_DT <![CDATA[ <= ]]> #{userProjectDTO.maxEDDT}
+					</if>
+					<if test="userProjectDTO.minEDDT != '' and userProjectDTO.maxEDDT == ''">
+						AND b.PRJ_ED_DT <![CDATA[ >= ]]> #{userProjectDTO.minEDDT}
+					</if>
+				) c
+				RIGHT OUTER JOIN
+				(
+				    SELECT f.PRJ_SEQ, f.SKILLS
+				    FROM 
+				    (
+				        SELECT PRJ_SEQ
+				         , LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+				         FROM
+				        (
+				            SELECT *
+				            FROM PROJECT_SKILL_TABLE
+				        	WHERE SK_CD IN <foreach item="item" collection="skills" open="(" separator="," close=")"> #{item} </foreach>
+				    	)
+				    	GROUP BY PRJ_SEQ
+				    ) e
+				    
+				    LEFT OUTER JOIN
+				        
+				    (
+				        SELECT PRJ_SEQ
+				        , LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+				        FROM
+				            PROJECT_SKILL_TABLE
+				        GROUP BY PRJ_SEQ
+				    ) f
+				    ON e.PRJ_SEQ = f.PRJ_SEQ
+				) d
+				ON c.PRJ_SEQ = d.PRJ_SEQ
+				WHERE c.PRJ_SEQ IS NOT NULL
+			) g
+		)
+		WHERE RNUM <![CDATA[>=]]> #{startNum} and RNUM <![CDATA[<=]]> #{endNum}
+	</select>
+	
+	<select id="getAddUserProjectTotal" parameterType="java.util.HashMap" resultType="int">
+	    SELECT COUNT(*)
+		FROM (
+		    SELECT c.PRJ_SEQ, c.PRJ_NM, c.CUS_CD, c.PRJ_ST_DT, c.PRJ_ED_DT, d.SKILLS
+			FROM (
+			    SELECT b.PRJ_SEQ, b.PRJ_NM, b.CUS_CD, b.PRJ_ST_DT, b.PRJ_ED_DT
+			    FROM
+			    (
+			        SELECT *
+			        FROM USER_PROJECT_TABLE
+			        WHERE USR_SEQ = #{userProjectDTO.usrSeq}
+			    ) a
+			    RIGHT OUTER JOIN
+			    (
+			        SELECT *
+			        FROM PROJECT_INFO
+			    ) b
+			    ON a.PRJ_SEQ = b.PRJ_SEQ
+			    WHERE USR_SEQ IS NULL
+			    <if test="userProjectDTO.prjNm != '' and userProjectDTO.prjNm != null">
+					AND b.PRJ_NM like '%' || #{userProjectDTO.prjNm} || '%'
+				</if>
+				<if test="userProjectDTO.prjSeq != 0">
+					AND b.PRJ_SEQ = #{userProjectDTO.prjSeq}
+				</if>
+				<if test="userProjectDTO.cusCD != 0">
+					AND b.CUS_CD = #{userProjectDTO.cusCD}
+				</if>
+				<if test="userProjectDTO.minSTDT != '' and userProjectDTO.maxSTDT != ''">
+					AND b.PRJ_ST_DT BETWEEN #{userProjectDTO.minSTDT} AND #{userProjectDTO.maxSTDT}
+				</if>
+				<if test="userProjectDTO.minSTDT == '' and userProjectDTO.maxSTDT != ''">
+					AND b.PRJ_ST_DT <![CDATA[ <= ]]> #{userProjectDTO.maxSTDT}
+				</if>
+				<if test="userProjectDTO.minSTDT != '' and userProjectDTO.maxSTDT == ''">
+					AND b.PRJ_ST_DT <![CDATA[ >= ]]> #{userProjectDTO.minSTDT}
+				</if>
+				<if test="userProjectDTO.minEDDT != '' and userProjectDTO.maxEDDT != ''">
+					AND b.PRJ_ED_DT BETWEEN #{userProjectDTO.minEDDT} AND #{userProjectDTO.maxEDDT}
+				</if>
+				<if test="userProjectDTO.minEDDT == '' and userProjectDTO.maxEDDT != ''">
+					AND b.PRJ_ED_DT <![CDATA[ <= ]]> #{userProjectDTO.maxEDDT}
+				</if>
+				<if test="userProjectDTO.minEDDT != '' and userProjectDTO.maxEDDT == ''">
+					AND b.PRJ_ED_DT <![CDATA[ >= ]]> #{userProjectDTO.minEDDT}
+				</if>
+			) c
+			RIGHT OUTER JOIN
+			(
+			    SELECT f.PRJ_SEQ, f.SKILLS
+			    FROM 
+			    (
+			        SELECT PRJ_SEQ
+			         , LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+			         FROM
+			        (
+			            SELECT *
+			            FROM PROJECT_SKILL_TABLE
+			        	WHERE SK_CD IN <foreach item="item" collection="skills" open="(" separator="," close=")"> #{item} </foreach>
+			    	)
+			    	GROUP BY PRJ_SEQ
+			    ) e
+			    
+			    LEFT OUTER JOIN
+			        
+			    (
+			        SELECT PRJ_SEQ
+			        , LISTAGG(SK_CD, ',') WITHIN GROUP(ORDER BY SK_CD) AS SKILLS
+			        FROM
+			            PROJECT_SKILL_TABLE
+			        GROUP BY PRJ_SEQ
+			    ) f
+			    ON e.PRJ_SEQ = f.PRJ_SEQ
+			) d
+			ON c.PRJ_SEQ = d.PRJ_SEQ
+			WHERE c.PRJ_SEQ IS NOT NULL
+		)
+	</select>
+	
+	<insert id="addUserProject" parameterType="com.example.demo.dto.UserProjectDTO">
+		INSERT INTO
+			USER_PROJECT_TABLE (
+				USR_SEQ,
+				PRJ_SEQ
+			)
+		VALUES (
+			#{usrSeq},
+			#{prjSeq}
+		)
+	</insert>
+	
+	<delete id="delUserProject" parameterType="java.util.HashMap">
+		DELETE FROM
+		    USER_PROJECT_TABLE
+		WHERE
+			USR_SEQ = #{userProjectDTO.usrSeq}
+		AND
+		    PRJ_SEQ IN
+		<foreach item="item" collection="prjSeqList" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<update id="saveUserProject" parameterType="com.example.demo.dto.UserProjectDTO">
+		UPDATE
+			USER_PROJECT_TABLE
+		<set>
+			<if test="usrPrjINDT != 'none'">
+				USR_PRJ_IN_DT = #{usrPrjINDT},
+			</if>
+			<if test="usrPrjINDT == 'none'">
+				USR_PRJ_IN_DT = null,
+			</if>
+			<if test="usrPrjINDT != 'none'">
+				USR_PRJ_OT_DT = #{usrPrjOTDT},
+			</if>
+			<if test="usrPrjINDT == 'none'">
+				USR_PRJ_OT_DT = null,
+			</if>
+			<if test="rlCD != 0">
+				RL_CD = #{rlCD},
+			</if>
+			<if test="rlCD == 0">
+				RL_CD = null
+			</if>
+		</set>
+		WHERE
+			USR_SEQ = #{usrSeq}
+		AND
+			PRJ_SEQ = #{prjSeq}
+	</update>
+</mapper>

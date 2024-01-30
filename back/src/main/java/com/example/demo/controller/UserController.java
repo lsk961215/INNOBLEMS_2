@@ -112,4 +112,18 @@ public class UserController {
 			return 1;
 		}
 	}
+	
+	@RequestMapping("/getUserProjectList")
+	public Map getUserProjectList(HttpServletRequest request, @RequestBody UserDTO userDTO) throws Exception {
+		Map resultMap = new HashMap();
+		
+		try {
+			resultMap = userService.getUserProjectList(userDTO);
+		}catch(Exception e){
+			e.printStackTrace();
+			System.out.println("오류가 발생했습니다.");
+		}
+		
+		return resultMap;
+	}
 }

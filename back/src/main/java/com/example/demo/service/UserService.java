@@ -86,4 +86,47 @@ public class UserService {
 		userDAO.delUser(list);
 		return;
 	}
+	
+	public Map getUserProjectList(UserDTO userDTO) {
+		Map resultMap = new HashMap();
+		
+		int pageNum = userDTO.getPageNum();
+		int countPerPage = userDTO.getCountPerPage();
+		
+		int startNum = 0;
+		int endNum = 0;
+		
+		startNum = (pageNum-1)*countPerPage+1;
+		endNum = pageNum*countPerPage;
+		
+		userDTO.setStartNum(startNum);
+		userDTO.setEndNum(endNum);
+		
+		List userProjectList = userDAO.getUserProjectList(userDTO);
+		
+		int total = userDAO.getUserProjectTotal(userDTO);
+		
+		int groupCount = 5;
+		
+		int totalPaging = (int) Math.ceil((double)total / countPerPage);
+		
+		int position = (int) Math.ceil((double)pageNum / groupCount);
+		
+		int beginPaging = (position-1) * groupCount + 1;
+		int endPaging = position * groupCount;
+		
+		if(endPaging > totalPaging) {
+			endPaging = totalPaging;
+		}
+		
+		resultMap.put("beginPaging", beginPaging);
+		resultMap.put("endPaging", endPaging);
+		resultMap.put("totalPaging", totalPaging);
+		resultMap.put("userProjectList", userProjectList);
+		resultMap.put("pageNum", pageNum);
+		resultMap.put("groupCount", groupCount);
+		resultMap.put("position", position);
+		
+		return resultMap;
+	}
 }

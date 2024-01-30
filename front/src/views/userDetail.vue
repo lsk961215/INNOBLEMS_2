@@ -40,7 +40,10 @@
                         </tr> 
                         <tr>
                             <td>비밀번호<a class="star">*</a></td>
-                            <td><button class="pwChangeButton" :on-click="changePwButton">비밀번호 변경하기</button></td>
+                            <td id="pwRow">
+                                <button class="pwChangeButton" v-on:click="changePwButton">비밀번호 변경하기</button>
+                                <div><input :type='pwType' :class="pwChange == true ? 'show' : 'hide'" v-model='requestBody.usrPw'></div>
+                            </td>
                             <td>기술등급</td>
                             <td>
                                 <select name="grCD" v-model="requestBody.grCD" id="grCD">
@@ -51,7 +54,9 @@
                         </tr> 
                         <tr>
                             <td>비밀번호 확인<a class="star">*</a></td>
-                            <td></td>
+                            <td id="pwCheckRow">
+                                <div><input :type='pwType' :class="pwChange == true ? 'show' : 'hide'" v-model='requestBody.usrPwCheck'></div>
+                            </td>
                             <td>개발분야</td>
                             <td>
                                 <select name="dvCD" v-model="requestBody.dvCD" id="dvCD">
@@ -153,10 +158,14 @@ export default {
 				countPerPage: 5,
                 usrZIP: '',
                 usrRAD: '',
-                usrDAD: ''
+                usrDAD: '',
+                
             },
-
             pwType: 'password',
+            pwChange: false,
+
+            pwInput: '',
+            pwCheckInput: '',
 
             image: [],
         };
@@ -237,6 +246,16 @@ export default {
             }
         },
 
+        changePwButton: function() {
+            if(this.pwChange == true){
+                this.pwChange = false
+                this.requestBody.usrPw = null
+                this.requestBody.usrPwCheck = null
+            } else {
+                this.pwChange = true
+            }
+        },
+
         edit: function() {
             const formData = new FormData()
             const fileInput = document.getElementById('image')
@@ -312,5 +331,12 @@ export default {
 </script>
   
 <style scoped>
+    .show {
+        display: block;
+    }
+
+    .hide {
+        display: none;
+    }
 </style>
   
